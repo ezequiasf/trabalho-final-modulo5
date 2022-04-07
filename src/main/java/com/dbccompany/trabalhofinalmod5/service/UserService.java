@@ -3,8 +3,10 @@ package com.dbccompany.trabalhofinalmod5.service;
 import com.dbccompany.trabalhofinalmod5.entity.UserEntity;
 import com.dbccompany.trabalhofinalmod5.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
 
 @RequiredArgsConstructor
+@Service
 public class UserService {
     private final UserRepository userRepository;
 
