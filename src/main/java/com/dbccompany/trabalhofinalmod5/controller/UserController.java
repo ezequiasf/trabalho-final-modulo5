@@ -3,7 +3,6 @@ package com.dbccompany.trabalhofinalmod5.controller;
 import com.dbccompany.trabalhofinalmod5.entity.UserEntity;
 import com.dbccompany.trabalhofinalmod5.service.UserService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -19,7 +18,7 @@ public class UserController {
     private final UserService userService;
 
     @PostMapping("/saveUser")
-    public void saveUser(@Valid @RequestBody UserEntity user) throws  IllegalArgumentException{
+    public void saveUser(@Valid @RequestBody UserEntity user) throws IllegalAccessException {
         userService.saveUser(user);
     }
 }

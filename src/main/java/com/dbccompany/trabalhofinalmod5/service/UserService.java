@@ -10,11 +10,13 @@ import org.springframework.stereotype.Service;
 public class UserService {
     private final UserRepository userRepository;
 
-    public void saveUser(UserEntity user) throws  IllegalArgumentException{
-        if (verifyAge(user) && (!verifyUserExists(user) && (!verifyIfEmailExists(user)))) {
-            userRepository.saveUser(user);
+    public void saveUser(UserEntity user) throws IllegalAccessException {
+        if(!verifyAge(user)){
+            throw new IllegalAccessException("user is not old enough");
+        }else if(verifyUserExists(user)){
+            throw new IllegalAccessException("user is not old enough");
         }
-        throw new IllegalArgumentException("User create failed!");
+            userRepository.saveUser(user);
     }
 
     //Retorna true se for maior do que 18 anos
