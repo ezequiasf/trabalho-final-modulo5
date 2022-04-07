@@ -13,5 +13,4 @@ public class UserEntity {
     String password;
     String email;
     boolean isactive;
-    String role;
 }

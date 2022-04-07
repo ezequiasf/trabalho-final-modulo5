@@ -22,7 +22,7 @@ public class UserRepository {
 
     private final static String DATABASE = "recipes";
     private final static String COLLECTION = "users";
-    public final static String URL = "mongodb://root:root@localhost:27017/?authSource=admin&readPreference=primary&appname=MongoDB%20Compass&directConnection=true&ssl=false";
+    public final static String URL = "mongodb+srv://ezeq:HRznroxVyy37xQRw@clusterformyapp.cycds.mongodb.net/recipes_app?retryWrites=true&w=majority";
 
     public String findBy(String field, String condition) {
         MongoClient client = ConnectionMongo.createConnection(URL);
@@ -56,7 +56,6 @@ public class UserRepository {
                 new Document("username", user.getUsername())
                         .append("email", user.getEmail())
                         .append("password", user.getPassword())
-                        .append("role", user.getRole())
                         .append("isactive", user.isIsactive())
         );
         ConnectionMongo.closeConnection(client);
