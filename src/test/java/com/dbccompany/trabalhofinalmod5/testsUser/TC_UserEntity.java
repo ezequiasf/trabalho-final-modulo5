@@ -18,7 +18,6 @@ public class TC_UserEntity {
                 .age(19)
                 .email("zezao@outlook.com")
                 .isactive(true)
-                .role("ROLE_PREMIUM")
                 .build();
         boolean age = userService.verifyAge(u1);
         assertTrue(age);
@@ -31,7 +30,6 @@ public class TC_UserEntity {
                 .age(17)
                 .email("flavinha@outlook.com")
                 .isactive(true)
-                .role("ROLE_STANDARD")
                 .build();
         boolean age = userService.verifyAge(u1);
         assertFalse(age);
@@ -44,7 +42,6 @@ public class TC_UserEntity {
                 .age(17)
                 .email("marcinha123@outlook.com")
                 .isactive(true)
-                .role("ROLE_STANDARD")
                 .build();
         assertThrows(IllegalArgumentException.class, () -> userService.saveUser(u1));
     }
@@ -56,7 +53,6 @@ public class TC_UserEntity {
                 .age(19)
                 .email("aleatorio@outlook.com")
                 .isactive(true)
-                .role("ROLE_STANDARD")
                 .build();
         assertThrows(IllegalArgumentException.class, () -> userService.saveUser(u1));
     }
