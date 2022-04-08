@@ -11,7 +11,9 @@ import java.math.BigDecimal;
 @NoArgsConstructor
 @Data
 public class RecipeDTO {
-
+    @NotBlank(message = "O nome do autor deve ser informado.")
+    @Size(min = 2, max = 40, message = "O nome ddo autor deve estar entre 2 e 15 caracteres.")
+    private String author;
     @NotBlank(message = "O nome da receita deve ser informado.")
     @Size(min = 2, max = 40, message = "O nome da receita deve estar entre 2 e 15 caracteres.")
     private String recipeName;
@@ -27,7 +29,7 @@ public class RecipeDTO {
 
     @Digits(integer = 6, fraction = 2)
     @DecimalMin(value = "0.0", message = "Não é permitido números negativos.")
-    private BigDecimal price;
+    private Double price;
 
     @Digits(integer = 6, fraction = 2)
     @DecimalMin(value = "0.0", message = "Não é permitido números negativos.")
