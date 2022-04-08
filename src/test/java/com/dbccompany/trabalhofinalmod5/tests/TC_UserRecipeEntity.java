@@ -1,4 +1,4 @@
-package com.dbccompany.trabalhofinalmod5.testsUser;
+package com.dbccompany.trabalhofinalmod5.tests;
 
 import com.dbccompany.trabalhofinalmod5.dto.RecipeDTO;
 import com.dbccompany.trabalhofinalmod5.entity.Classification;
@@ -18,7 +18,7 @@ import java.util.Arrays;
 import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
-public class TC_UserEntity {
+public class TC_UserRecipeEntity {
     @Autowired
     private UserService userService;
     @Autowired

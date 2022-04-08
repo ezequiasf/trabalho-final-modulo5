@@ -5,6 +5,7 @@ import com.dbccompany.trabalhofinalmod5.dto.RecipeDTO;
 import com.dbccompany.trabalhofinalmod5.entity.RecipeEntity;
 import com.dbccompany.trabalhofinalmod5.exception.CaloriesLimitExceededException;
 import com.dbccompany.trabalhofinalmod5.exception.PriceExpensiveException;
+import com.dbccompany.trabalhofinalmod5.exception.RecipeNotFoundException;
 import com.dbccompany.trabalhofinalmod5.exception.UserDontExistException;
 import com.dbccompany.trabalhofinalmod5.service.RecipeService;
 import io.swagger.annotations.ApiOperation;
@@ -56,7 +57,7 @@ public class RecipeController {
             @ApiResponse(code = 403, message = "Você não tem permissão para acessar este recurso"),
             @ApiResponse(code = 500, message = "Foi gerada uma exceção no sistema."),})
     @GetMapping("/findByRecipeName")
-    public RecipeEntity findByRecipeName(@RequestParam("recipeName") String recipeName) {
+    public RecipeEntity findByRecipeName(@RequestParam("recipeName") String recipeName) throws RecipeNotFoundException {
         return recipeService.findByRecipeName(recipeName);
     }
 }

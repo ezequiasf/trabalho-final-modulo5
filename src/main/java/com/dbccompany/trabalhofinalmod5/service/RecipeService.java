@@ -5,6 +5,7 @@ import com.dbccompany.trabalhofinalmod5.dto.UserDTO;
 import com.dbccompany.trabalhofinalmod5.entity.RecipeEntity;
 import com.dbccompany.trabalhofinalmod5.exception.CaloriesLimitExceededException;
 import com.dbccompany.trabalhofinalmod5.exception.PriceExpensiveException;
+import com.dbccompany.trabalhofinalmod5.exception.RecipeNotFoundException;
 import com.dbccompany.trabalhofinalmod5.exception.UserDontExistException;
 import com.dbccompany.trabalhofinalmod5.repository.RecipeRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -40,7 +41,7 @@ public class RecipeService {
         recipeRepository.deleteRecipe(recipeName, author);
     }
 
-    public RecipeEntity findByRecipeName(String recipeName) {
+    public RecipeEntity findByRecipeName(String recipeName) throws RecipeNotFoundException {
         return recipeRepository.findByRecipeName(recipeName);
     }
 

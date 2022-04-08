@@ -3,11 +3,13 @@ package com.dbccompany.trabalhofinalmod5.repository;
 import com.dbccompany.trabalhofinalmod5.config.ConnectionMongo;
 import com.dbccompany.trabalhofinalmod5.entity.Classification;
 import com.dbccompany.trabalhofinalmod5.entity.RecipeEntity;
+import com.dbccompany.trabalhofinalmod5.exception.RecipeNotFoundException;
 import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoCollection;
 import org.bson.Document;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.stream.Collectors;
 
 @Repository
@@ -16,12 +18,15 @@ public class RecipeRepository {
     private final static String DATABASE = "recipes_app";
     private final static String COLLECTION = "recipes";
 
-    public RecipeEntity findByRecipeName(String recipeName) {
+    public RecipeEntity findByRecipeName(String recipeName) throws RecipeNotFoundException {
         MongoClient client = ConnectionMongo.createConnection();
         Document docRecipe = getCollectionRecipe(client)
                 .find(new Document("recipeName", recipeName)).first();
         ConnectionMongo.closeConnection(client);
-        return convertDocument(docRecipe);
+        if (docRecipe != null) {
+            return convertDocument(docRecipe);
+        }
+        throw new RecipeNotFoundException("Recipe not found!");
     }
 
     public void saveRecipe(RecipeEntity recipe) {
@@ -34,13 +39,7 @@ public class RecipeRepository {
                         .append("price", recipe.getPrice())
                         .append("calories", recipe.getCalories())
                         .append("ingredients", recipe.getIngredients())
-                        .append("classifications", recipe.getClassifications()
-                                .stream()
-                                .map(cl -> new Document("authorClass",
-                                        cl.getAuthorClass()).append("rating"
-                                        , cl.getRating()).append("coment", cl.getComent()))
-                                .collect(Collectors.toList()))
-        );
+                        .append("classifications", converClassificationToDocument(recipe.getClassifications())));
         ConnectionMongo.closeConnection(client);
     }
 
@@ -68,8 +67,11 @@ public class RecipeRepository {
                 .ingredients(docRecipe.getList("ingredients", String.class))
                 .classifications(docRecipe.getList("classifications", Document.class)
                         .stream()
-                        .map(doc -> new Classification(doc.getString("authorClass"),
-                                doc.getDouble("rating"), doc.getString("coment")))
+                        .map(doc -> Classification.builder()
+                                .authorClass(doc.getString("authorClass"))
+                                .rating(doc.getDouble("rating"))
+                                .coment(doc.getString("coment"))
+                                .build())
                         .collect(Collectors.toList())).build();
     }
 
@@ -80,12 +82,14 @@ public class RecipeRepository {
                 .append("prepareTime", recipe.getPrepareTime())
                 .append("calories", recipe.getCalories())
                 .append("ingredients", recipe.getIngredients())
-                .append("classifications", recipe.getClassifications()
-                        .stream()
-                        .map(cl -> new Document("authorClass",
-                                cl.getAuthorClass()).append("rating"
-                                , cl.getRating()).append("coment", cl.getComent()))
-                        .collect(Collectors.toList()));
+                .append("classifications", converClassificationToDocument(recipe.getClassifications()));
+    }
+
+    private List<Document> converClassificationToDocument(List<Classification> cla) {
+        return cla.stream().map(cl -> new Document("authorClass", cl.getAuthorClass())
+                        .append("rating", cl.getRating())
+                        .append("coment", cl.getComent()))
+                .collect(Collectors.toList());
     }
 
     private MongoCollection<Document> getCollectionRecipe(MongoClient client) {
