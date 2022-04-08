@@ -1,6 +1,7 @@
 package com.dbccompany.trabalhofinalmod5.controller;
 
 import com.dbccompany.trabalhofinalmod5.entity.UserEntity;
+import com.dbccompany.trabalhofinalmod5.exception.UserAlreadyExistsException;
 import com.dbccompany.trabalhofinalmod5.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -18,7 +19,7 @@ public class UserController {
     private final UserService userService;
 
     @PostMapping("/saveUser")
-    public void saveUser(@Valid @RequestBody UserEntity user) throws IllegalAccessException {
+    public void saveUser(@Valid @RequestBody UserEntity user)throws UserAlreadyExistsException {
         userService.saveUser(user);
     }
 }
