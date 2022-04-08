@@ -25,5 +25,7 @@ public class UserDTO {
     @NotBlank(message = "O email deve ser informado.")
     private String email;
 
+    private Integer age;
+
     private Boolean isActive;
 }

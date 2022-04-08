@@ -5,11 +5,13 @@ import com.mongodb.client.MongoClients;
 
 public class ConnectionMongo {
 
-    public static MongoClient createConnection(String url) {
-        return MongoClients.create(url);
+    public final static String URL = "mongodb+srv://ezeq:HRznroxVyy37xQRw@clusterformyapp.cycds.mongodb.net/recipes_app?retryWrites=true&w=majority";
+
+    public static MongoClient createConnection() {
+        return MongoClients.create(URL);
     }
 
-    public static void closeConnection (MongoClient client){
+    public static void closeConnection(MongoClient client) {
         client.close();
     }
 }

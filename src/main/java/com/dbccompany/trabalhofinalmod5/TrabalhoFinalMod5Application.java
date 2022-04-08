@@ -7,8 +7,8 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 public class TrabalhoFinalMod5Application {
 
-	public static void main(String[] args) {
-		SpringApplication.run(TrabalhoFinalMod5Application.class, args);
-	}
+    public static void main(String[] args) {
+        SpringApplication.run(TrabalhoFinalMod5Application.class, args);
+    }
 
 }
