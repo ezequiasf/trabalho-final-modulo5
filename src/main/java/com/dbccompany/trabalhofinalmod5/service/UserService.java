@@ -12,11 +12,13 @@ public class UserService {
 
     public void saveUser(UserEntity user) throws IllegalAccessException {
         if(!verifyAge(user)){
-            throw new IllegalAccessException("user is not old enough");
-        }else if(verifyUserExists(user)){
-            throw new IllegalAccessException("user is not old enough");
+            throw new IllegalAccessException("user is not old enough!");
+        }else if(!verifyUserExists(user)){
+            throw new IllegalAccessException("username already exists!");
+        }else if(verifyIfEmailExists(user)){
+            throw new IllegalAccessException("email address already exists!");
         }
-            userRepository.saveUser(user);
+           userRepository.saveUser(user);
     }
 
     //Retorna true se for maior do que 18 anos
