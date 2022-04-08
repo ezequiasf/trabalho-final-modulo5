@@ -27,13 +27,9 @@ public class UserRepository {
 
     public UserEntity findByUsername(String username) throws UserDontExistException {
         MongoClient client = ConnectionMongo.createConnection();
-        Document docUser = getCollectionUser(client)
-                .find(new Document("username", username)).first();
+        UserEntity user = verifyIfUserDontExist(client, username);
         ConnectionMongo.closeConnection(client);
-        if (docUser != null) {
-            return convertDocument(docUser);
-        }
-        throw new UserDontExistException("User don't exist");
+        return user;
     }
 
     public List<UserEntity> aggregatingUser(Bson pipeline, Bson... options) {
@@ -63,9 +59,11 @@ public class UserRepository {
         ConnectionMongo.closeConnection(client);
     }
 
-    public void updateUser(String username, UserEntity newUser) throws UserAlreadyExistsException {
+    public void updateUser(String username, UserEntity newUser) throws UserDontExistException {
         MongoClient client = ConnectionMongo.createConnection();
-        verifyIfUserAlreadyExists(client, newUser).updateOne(eq("username", username),
+        UserEntity user = verifyIfUserDontExist(client, username);
+        newUser.setUsername(user.getUsername());
+        getCollectionUser(client).updateOne(eq("username", username),
                 new Document("$set", convertUserEntity(newUser)));
         ConnectionMongo.closeConnection(client);
     }
@@ -105,6 +103,15 @@ public class UserRepository {
                 .append(("age"), user.getAge())
                 .append("password", user.getPassword())
                 .append("isactive", user.isIsactive());
+    }
+
+    private UserEntity verifyIfUserDontExist (MongoClient client, String username) throws UserDontExistException {
+        Document docUser = getCollectionUser(client)
+                .find(new Document("username", username)).first();
+        if (docUser != null) {
+            return convertDocument(docUser);
+        }
+        throw new UserDontExistException("User don't exist");
     }
 
 }

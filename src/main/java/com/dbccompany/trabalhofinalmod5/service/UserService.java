@@ -1,6 +1,7 @@
 package com.dbccompany.trabalhofinalmod5.service;
 
 import com.dbccompany.trabalhofinalmod5.dto.UserDTO;
+import com.dbccompany.trabalhofinalmod5.dto.UserUpdateDTO;
 import com.dbccompany.trabalhofinalmod5.entity.UserEntity;
 import com.dbccompany.trabalhofinalmod5.exception.UserAlreadyExistsException;
 import com.dbccompany.trabalhofinalmod5.exception.UserDontExistException;
@@ -23,7 +24,7 @@ public class UserService {
         return objectMapper.convertValue(userRepository.findByUsername(username), UserDTO.class);
     }
 
-    public void updateUser(String username, UserDTO user) throws UserAlreadyExistsException {
+    public void updateUser(String username, UserUpdateDTO user) throws UserAlreadyExistsException, UserDontExistException {
         userRepository.updateUser(username, objectMapper.convertValue(user, UserEntity.class));
     }
 

@@ -1,6 +1,7 @@
 package com.dbccompany.trabalhofinalmod5.controller;
 
 import com.dbccompany.trabalhofinalmod5.dto.UserDTO;
+import com.dbccompany.trabalhofinalmod5.dto.UserUpdateDTO;
 import com.dbccompany.trabalhofinalmod5.exception.UserAlreadyExistsException;
 import com.dbccompany.trabalhofinalmod5.exception.UserDontExistException;
 import com.dbccompany.trabalhofinalmod5.service.UserService;
@@ -33,7 +34,7 @@ public class UserController {
             @ApiResponse(code = 403, message = "Você não tem permissão para acessar este recurso"),
             @ApiResponse(code = 500, message = "Foi gerada uma exceção no sistema."),})
     @PutMapping("/updateUser")
-    public void updateUser(@RequestParam("username") String username, @Valid @RequestBody UserDTO user) throws UserAlreadyExistsException {
+    public void updateUser(@RequestParam("username") String username, @Valid @RequestBody UserUpdateDTO user) throws UserAlreadyExistsException, UserDontExistException {
         userService.updateUser(username, user);
     }
 
