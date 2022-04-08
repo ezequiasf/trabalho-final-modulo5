@@ -19,5 +19,7 @@ public class RecipeService {
         recipeRepository.saveRecipe(objectMapper.convertValue(recipe,RecipeEntity.class));
     }
 
-
+    public void updateRecipe(String recipeName, RecipeDTO recipe){
+        RecipeRepository
+    }
 }
