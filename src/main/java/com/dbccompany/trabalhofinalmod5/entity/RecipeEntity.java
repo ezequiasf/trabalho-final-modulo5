@@ -15,7 +15,7 @@ public class RecipeEntity {
     private String recipeName;
     private String prepareRecipe;
     private Integer prepareTime;
-    private Double  price;
+    private Double price;
     private Double calories;
     private List<String> ingredients;
     private List<Classification> classifications;

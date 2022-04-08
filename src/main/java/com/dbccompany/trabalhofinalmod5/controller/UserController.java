@@ -4,7 +4,6 @@ import com.dbccompany.trabalhofinalmod5.dto.UserDTO;
 import com.dbccompany.trabalhofinalmod5.exception.UserAlreadyExistsException;
 import com.dbccompany.trabalhofinalmod5.service.UserService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Required;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -23,8 +22,9 @@ public class UserController {
 
     @PutMapping("/updateUser")
     public void updateUser(@RequestParam("username") String username, @Valid @RequestBody UserDTO user) throws UserAlreadyExistsException {
-            userService.updateUser(username,user);
+        userService.updateUser(username, user);
     }
+
     @DeleteMapping("/deleteUser")
     public void deleteUser(@RequestParam("username") String username) {
         userService.deleteUser(username);

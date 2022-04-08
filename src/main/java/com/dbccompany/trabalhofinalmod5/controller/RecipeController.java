@@ -3,6 +3,8 @@ package com.dbccompany.trabalhofinalmod5.controller;
 
 import com.dbccompany.trabalhofinalmod5.dto.RecipeDTO;
 import com.dbccompany.trabalhofinalmod5.entity.RecipeEntity;
+import com.dbccompany.trabalhofinalmod5.exception.CaloriesLimitExceededException;
+import com.dbccompany.trabalhofinalmod5.exception.PriceExpensiveException;
 import com.dbccompany.trabalhofinalmod5.service.RecipeService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
@@ -17,7 +19,7 @@ public class RecipeController {
 
 
     @PostMapping("/saveRecipe")
-    public void saveRecipe(@Valid @RequestBody RecipeDTO recipe) {
+    public void saveRecipe(@Valid @RequestBody RecipeDTO recipe) throws PriceExpensiveException, CaloriesLimitExceededException, IllegalAccessException {
         recipeService.saveRecipe(recipe);
     }
 
@@ -31,11 +33,11 @@ public class RecipeController {
     @DeleteMapping("/deleteRecipe")
     public void deleteRecipe(@RequestParam("recipeName") String recipeName,
                              @RequestParam("author") String author) {
-        recipeService.deleteRecipe(recipeName,author);
+        recipeService.deleteRecipe(recipeName, author);
     }
 
     @GetMapping("/findBryRecipeName")
     public RecipeEntity findByRecipeName(@RequestParam("recipeName") String recipeName) {
-      return recipeService.findByRecipeName(recipeName);
+        return recipeService.findByRecipeName(recipeName);
     }
 }
