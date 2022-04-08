@@ -1,7 +1,9 @@
 package com.dbccompany.trabalhofinalmod5.repository;
 
 import com.dbccompany.trabalhofinalmod5.config.ConnectionMongo;
+import com.dbccompany.trabalhofinalmod5.entity.Classification;
 import com.dbccompany.trabalhofinalmod5.entity.RecipeEntity;
+import com.dbccompany.trabalhofinalmod5.entity.UserEntity;
 import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoCollection;
@@ -22,28 +24,13 @@ public class RecipeRepository {
     private final static String DATABASE = "recipes_app";
     private final static String COLLECTION = "recipes";
 
-    public String findBy(String field, String condition) {
+    public RecipeEntity findByRecipeName(String recipeName) {
         MongoClient client = ConnectionMongo.createConnection();
-        String json = getCollectionRecipe(client).find(new Document(field, condition)).first().toJson();
+        Document docRecipe = getCollectionRecipe(client)
+                .find(new Document("recipeName", recipeName)).first();
+        ;
         ConnectionMongo.closeConnection(client);
-        return json;
-    }
-
-    public void aggregatingRecipe(Bson pipeline, Bson... options) {
-        MongoClient client = ConnectionMongo.createConnection();
-        List<Bson> aggregation = new ArrayList<>();
-        aggregation.add(pipeline);
-        aggregation.addAll(Arrays.asList(options));
-        getCollectionRecipe(client).aggregate(aggregation).forEach(doc -> System.out.println(doc.toJson()));
-        ConnectionMongo.closeConnection(client);
-    }
-
-    public void findAllProjection(String... fields) {
-        MongoClient client = ConnectionMongo.createConnection();
-        Bson projection = fields(Projections.include(fields), Projections.excludeId());
-        FindIterable<Document> users = getCollectionRecipe(client).find().projection(projection);
-        for (Document user : users) System.out.println(user.toJson());
-        ConnectionMongo.closeConnection(client);
+        return convertDocument(docRecipe);
     }
 
     public void saveRecipe(RecipeEntity recipe) {
@@ -61,10 +48,24 @@ public class RecipeRepository {
         ConnectionMongo.closeConnection(client);
     }
 
-//    public void deleteRecipe (){
-//        MongoClient client = ConnectionMongo.createConnection();
-//        getCollectionRecipe(client).deleteOne()
-//    }
+    private RecipeEntity convertDocument(Document docRecipe) {
+        return RecipeEntity.builder().id(docRecipe.getObjectId("_id").toString())
+                .recipeName(docRecipe.getString("recipeName"))
+                .author(docRecipe.getString("author"))
+                .calories(docRecipe.getDouble("calories"))
+                .prepareRecipe(docRecipe.getString("prepareRecipe"))
+                .ingredients(docRecipe.getList("ingredients", String.class))
+                .classifications(docRecipe.getList("classifications", Classification.class))
+                .build();
+    }
+
+    private Document convertUserEntity(UserEntity user) {
+        return new Document("username", user.getUsername())
+                .append("email", user.getEmail())
+                .append(("age"), user.getAge())
+                .append("password", user.getPassword())
+                .append("isactive", user.isIsactive());
+    }
 
     private MongoCollection<Document> getCollectionRecipe(MongoClient client) {
         return client.getDatabase(DATABASE).getCollection(COLLECTION);
