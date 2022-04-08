@@ -27,59 +27,79 @@ public class UserRepository {
 
     public UserEntity findByUsername(String username) throws UserDontExistException {
         MongoClient client = ConnectionMongo.createConnection();
+
         UserEntity user = verifyIfUserDontExist(client, username);
+
         ConnectionMongo.closeConnection(client);
         return user;
     }
 
     public List<UserEntity> aggregatingUser(Bson pipeline, Bson... options) {
         MongoClient client = ConnectionMongo.createConnection();
+
         List<UserEntity> userEntities = new ArrayList<>();
         List<Bson> aggregation = new ArrayList<>();
+
         aggregation.add(pipeline);
         aggregation.addAll(Arrays.asList(options));
+
         getCollectionUser(client).aggregate(aggregation).forEach(doc -> userEntities.add(convertDocument(doc)));
+
         ConnectionMongo.closeConnection(client);
         return userEntities;
     }
 
     public List<UserEntity> findAllProjection(String... fields) {
         MongoClient client = ConnectionMongo.createConnection();
+
         List<UserEntity> userEntities = new ArrayList<>();
+
         Bson projection = fields(Projections.include(fields), Projections.excludeId());
+
         FindIterable<Document> users = getCollectionUser(client).find().projection(projection);
+
         users.forEach(document -> userEntities.add(convertDocument(document)));
+
         ConnectionMongo.closeConnection(client);
         return userEntities;
     }
 
     public void saveUser(UserEntity user) throws UserAlreadyExistsException {
         MongoClient client = ConnectionMongo.createConnection();
+
         verifyIfUserAlreadyExists(client, user).insertOne(convertUserEntity(user));
+
         ConnectionMongo.closeConnection(client);
     }
 
     public void updateUser(String username, UserEntity newUser) throws UserDontExistException {
         MongoClient client = ConnectionMongo.createConnection();
+
         UserEntity user = verifyIfUserDontExist(client, username);
         newUser.setUsername(user.getUsername());
+
         getCollectionUser(client).updateOne(eq("username", username),
                 new Document("$set", convertUserEntity(newUser)));
+
         ConnectionMongo.closeConnection(client);
     }
 
     public void deleteUser(String username) {
         MongoClient client = ConnectionMongo.createConnection();
+
         getCollectionUser(client).deleteOne(eq("username", username));
+
         ConnectionMongo.closeConnection(client);
     }
 
     public MongoCollection<Document> verifyIfUserAlreadyExists(MongoClient client, UserEntity user) throws UserAlreadyExistsException {
         MongoCollection<Document> userCollection = getCollectionUser(client);
+
         Document docUser = userCollection.find(new Document("username", user.getUsername())).first();
         if (docUser != null) {
             throw new UserAlreadyExistsException("User already created!");
         }
+
         return userCollection;
     }
 
@@ -108,9 +128,11 @@ public class UserRepository {
     private UserEntity verifyIfUserDontExist (MongoClient client, String username) throws UserDontExistException {
         Document docUser = getCollectionUser(client)
                 .find(new Document("username", username)).first();
+
         if (docUser != null) {
             return convertDocument(docUser);
         }
+
         throw new UserDontExistException("User don't exist");
     }
 
