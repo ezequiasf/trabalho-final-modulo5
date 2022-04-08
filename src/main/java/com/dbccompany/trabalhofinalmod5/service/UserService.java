@@ -23,10 +23,10 @@ public class UserService {
     }
 
     public void updateUser(String username, UserDTO user) throws UserAlreadyExistsException {
-        userRepository.updateUser(username,objectMapper.convertValue(user, UserEntity.class));
+        userRepository.updateUser(username, objectMapper.convertValue(user, UserEntity.class));
     }
 
-    public void deleteUser (String username){
+    public void deleteUser(String username) {
         userRepository.deleteUser(username);
     }
 
