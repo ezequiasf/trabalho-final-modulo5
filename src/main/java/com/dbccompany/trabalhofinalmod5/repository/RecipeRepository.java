@@ -3,20 +3,12 @@ package com.dbccompany.trabalhofinalmod5.repository;
 import com.dbccompany.trabalhofinalmod5.config.ConnectionMongo;
 import com.dbccompany.trabalhofinalmod5.entity.Classification;
 import com.dbccompany.trabalhofinalmod5.entity.RecipeEntity;
-import com.dbccompany.trabalhofinalmod5.entity.UserEntity;
-import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoCollection;
-import com.mongodb.client.model.Projections;
 import org.bson.Document;
-import org.bson.conversions.Bson;
 import org.springframework.stereotype.Repository;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-
-import static com.mongodb.client.model.Projections.fields;
+import static com.mongodb.client.model.Filters.eq;
 
 @Repository
 public class RecipeRepository {
@@ -28,7 +20,6 @@ public class RecipeRepository {
         MongoClient client = ConnectionMongo.createConnection();
         Document docRecipe = getCollectionRecipe(client)
                 .find(new Document("recipeName", recipeName)).first();
-        ;
         ConnectionMongo.closeConnection(client);
         return convertDocument(docRecipe);
     }
@@ -48,6 +39,19 @@ public class RecipeRepository {
         ConnectionMongo.closeConnection(client);
     }
 
+    public void updateRecipe(String recipeName, String author, RecipeEntity recipe) {
+        MongoClient client = ConnectionMongo.createConnection();
+        getCollectionRecipe(client).updateOne(new Document("recipeName", recipeName).append("author", author),
+                new Document("$set", convertRecipeEntity(recipe)));
+        ConnectionMongo.closeConnection(client);
+    }
+
+    public void deleteRecipe (String recipeName, String author){
+        MongoClient client = ConnectionMongo.createConnection();
+        getCollectionRecipe(client).deleteOne(new Document("recipeName", recipeName).append("author", author));
+        ConnectionMongo.closeConnection(client);
+    }
+
     private RecipeEntity convertDocument(Document docRecipe) {
         return RecipeEntity.builder().id(docRecipe.getObjectId("_id").toString())
                 .recipeName(docRecipe.getString("recipeName"))
@@ -59,12 +63,14 @@ public class RecipeRepository {
                 .build();
     }
 
-    private Document convertUserEntity(UserEntity user) {
-        return new Document("username", user.getUsername())
-                .append("email", user.getEmail())
-                .append(("age"), user.getAge())
-                .append("password", user.getPassword())
-                .append("isactive", user.isIsactive());
+    private Document convertRecipeEntity(RecipeEntity recipe) {
+        return new Document("author", recipe.getAuthor())
+                .append("recipeName", recipe.getRecipeName())
+                .append(("prepareRecipe"), recipe.getPrepareRecipe())
+                .append("prepareTime", recipe.getPrepareTime())
+                .append("calories", recipe.getCalories())
+                .append("ingredients", recipe.getIngredients())
+                .append("classifications", recipe.getClassifications());
     }
 
     private MongoCollection<Document> getCollectionRecipe(MongoClient client) {
