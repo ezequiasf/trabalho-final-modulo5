@@ -22,10 +22,13 @@ public class UserService {
         return objectMapper.convertValue(userRepository.findByUsername(username), UserDTO.class);
     }
 
-//    public UserDTO updateUser(String username, UserDTO user){
-//        userRepository.updateUser(username,objectMapper.convertValue(user, UserEntity.class));
-//        return objectMapper.convertValue(;)
-//    }
+    public void updateUser(String username, UserDTO user) throws UserAlreadyExistsException {
+        userRepository.updateUser(username,objectMapper.convertValue(user, UserEntity.class));
+    }
+
+    public void deleteUser (String username){
+        userRepository.deleteUser(username);
+    }
 
     //Retorna true se for maior do que 18 anos
     public boolean verifyAge(UserEntity user) {
