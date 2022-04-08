@@ -9,7 +9,6 @@ import com.dbccompany.trabalhofinalmod5.exception.PriceExpensiveException;
 import com.dbccompany.trabalhofinalmod5.service.RecipeService;
 import com.dbccompany.trabalhofinalmod5.service.UserService;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -29,10 +28,11 @@ public class TC_UserEntity {
 
     //Lógica do user
     @Test
-    void deveTestarSeUsuarioTemIdadeMaiorQueDezoitoAnos() {
+    void deveTestarSeUsuarioSeraCadastrado() {
         UserEntity u1 = UserEntity.builder()
-                .username("zezão")
+                .username("ze_joa123")
                 .age(19)
+                .password("1233456")
                 .email("zezao@outlook.com")
                 .isactive(true)
                 .build();
@@ -41,10 +41,11 @@ public class TC_UserEntity {
     }
 
     @Test
-    void deveTestarSeUsuarioTemIdadeMenorQueDezoitoAnos() {
+    void deveTestarSeUsuarioNaoSeraCadastrado() {
         UserEntity u1 = UserEntity.builder()
                 .username("flavia")
                 .age(17)
+                .password("54321")
                 .email("flavinha@outlook.com")
                 .isactive(true)
                 .build();
@@ -54,47 +55,48 @@ public class TC_UserEntity {
 
     //Lógica do recipe
     @Test
-    void deveTestarSeOPrecoEMuitoCaro (){
+    void deveTestarSeOPrecoUltrapassaLimite() {
         RecipeEntity r1 = RecipeEntity.builder()
                 .price(350.0).build();
-       assertThrows(PriceExpensiveException.class,()-> recipeService
-               .saveRecipe(objectMapper.convertValue(r1, RecipeDTO.class)));
+        assertThrows(PriceExpensiveException.class, () -> recipeService
+                .saveRecipe(objectMapper.convertValue(r1, RecipeDTO.class)));
     }
 
     @Test
-    void deveTestarSeUltrapassaOLimiteDeCaloria (){
+    void deveTestarSeUltrapassaOLimiteDeCaloria() {
         RecipeEntity r1 = RecipeEntity.builder()
                 .calories(3000.0)
                 .price(43.54)
                 .build();
-        assertThrows(CaloriesLimitExceededException.class,()-> recipeService
+        assertThrows(CaloriesLimitExceededException.class, () -> recipeService
                 .saveRecipe(objectMapper.convertValue(r1, RecipeDTO.class)));
     }
 
     @Test
-    void deveTestarSeNaoUltrapassaOLimiteDeCaloria (){
+    void deveTestarSeNaoUltrapassaOLimiteDeCaloria() {
         RecipeEntity r1 = RecipeEntity.builder()
-                .ingredients(Arrays.asList("ovo", "leite","carne"))
-                .author("joao")
+                .ingredients(Arrays.asList("ovo", "leite", "carne"))
+                .author("carlos")
                 .prepareTime(12)
                 .price(32.12)
                 .classifications(Arrays.asList(new Classification()))
                 .calories(1499.0).build();
-        assertDoesNotThrow(()-> recipeService
+        assertDoesNotThrow(() -> recipeService
                 .saveRecipe(objectMapper.convertValue(r1, RecipeDTO.class)));
     }
 
     @Test
-    void deveTestarSeUsuarioNaoPodeCadastrarReceita (){
+    void deveTestarUsuarioInativoNaoPodeCadastrarReceita() {
         RecipeEntity r1 = RecipeEntity.builder()
-                .ingredients(Arrays.asList("ovo", "leite","carne"))
                 .author("arlindo")
+                .prepareRecipe("blablablabla")
                 .prepareTime(12)
                 .price(32.12)
+                .ingredients(Arrays.asList("ovo", "leite", "carne"))
                 .classifications(Arrays.asList(new Classification()))
                 .calories(1499.0).build();
         RecipeDTO recipe = objectMapper.convertValue(r1, RecipeDTO.class);
-        assertThrows(IllegalAccessException.class, ()-> recipeService.verifyIfUserIsActive(recipe));
+        assertThrows(IllegalAccessException.class, () -> recipeService.saveRecipe(recipe));
     }
 
 }

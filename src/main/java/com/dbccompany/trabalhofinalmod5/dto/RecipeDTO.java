@@ -15,10 +15,10 @@ public class RecipeDTO {
     @NotBlank(message = "O nome do autor deve ser informado.")
     @Size(min = 2, max = 40, message = "O nome ddo autor deve estar entre 2 e 15 caracteres.")
     private String author;
+
     @NotBlank(message = "O nome da receita deve ser informado.")
     @Size(min = 2, max = 40, message = "O nome da receita deve estar entre 2 e 15 caracteres.")
     private String recipeName;
-
 
     @NotBlank(message = "O modo de preparo deve ser informado.")
     @Size(min = 1, max = 2500, message = "O modo de preparo deve ter no máximo 2500 caracteres.")
@@ -34,6 +34,7 @@ public class RecipeDTO {
     @Digits(integer = 6, fraction = 2)
     @DecimalMin(value = "0.0", message = "Não é permitido números negativos.")
     private Double calories;
+
     @NotNull
     private List<String> ingredients;
 

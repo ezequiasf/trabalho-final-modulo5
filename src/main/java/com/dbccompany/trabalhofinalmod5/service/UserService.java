@@ -3,6 +3,7 @@ package com.dbccompany.trabalhofinalmod5.service;
 import com.dbccompany.trabalhofinalmod5.dto.UserDTO;
 import com.dbccompany.trabalhofinalmod5.entity.UserEntity;
 import com.dbccompany.trabalhofinalmod5.exception.UserAlreadyExistsException;
+import com.dbccompany.trabalhofinalmod5.exception.UserDontExistException;
 import com.dbccompany.trabalhofinalmod5.repository.UserRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
@@ -18,7 +19,7 @@ public class UserService {
         userRepository.saveUser(objectMapper.convertValue(user, UserEntity.class));
     }
 
-    public UserDTO findByUsername(String username) {
+    public UserDTO findByUsername(String username) throws UserDontExistException {
         return objectMapper.convertValue(userRepository.findByUsername(username), UserDTO.class);
     }
 
