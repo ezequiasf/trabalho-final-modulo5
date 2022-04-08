@@ -1,5 +1,6 @@
 package com.dbccompany.trabalhofinalmod5.controller;
 
+import com.dbccompany.trabalhofinalmod5.dto.UserDTO;
 import com.dbccompany.trabalhofinalmod5.entity.UserEntity;
 import com.dbccompany.trabalhofinalmod5.exception.UserAlreadyExistsException;
 import com.dbccompany.trabalhofinalmod5.service.UserService;
@@ -19,7 +20,7 @@ public class UserController {
     private final UserService userService;
 
     @PostMapping("/saveUser")
-    public void saveUser(@Valid @RequestBody UserEntity user)throws UserAlreadyExistsException {
+    public void saveUser(@Valid @RequestBody UserDTO user)throws UserAlreadyExistsException {
         userService.saveUser(user);
     }
 }
