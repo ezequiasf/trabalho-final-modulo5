@@ -20,9 +20,12 @@ public class RecipeRepository {
 
     public RecipeEntity findByRecipeName(String recipeName) throws RecipeNotFoundException {
         MongoClient client = ConnectionMongo.createConnection();
+
         Document docRecipe = getCollectionRecipe(client)
                 .find(new Document("recipeName", recipeName)).first();
+
         ConnectionMongo.closeConnection(client);
+
         if (docRecipe != null) {
             return convertDocument(docRecipe);
         }
@@ -31,6 +34,7 @@ public class RecipeRepository {
 
     public void saveRecipe(RecipeEntity recipe) {
         MongoClient client = ConnectionMongo.createConnection();
+
         getCollectionRecipe(client).insertOne(
                 new Document("author", recipe.getAuthor())
                         .append("recipeName", recipe.getRecipeName())
@@ -38,21 +42,25 @@ public class RecipeRepository {
                         .append("prepareTime", recipe.getPrepareTime())
                         .append("price", recipe.getPrice())
                         .append("calories", recipe.getCalories())
-                        .append("ingredients", recipe.getIngredients())
-                        .append("classifications", converClassificationToDocument(recipe.getClassifications())));
+                        .append("ingredients", recipe.getIngredients()));
+
         ConnectionMongo.closeConnection(client);
     }
 
     public void updateRecipe(String recipeName, String author, RecipeEntity recipe) {
         MongoClient client = ConnectionMongo.createConnection();
+
         getCollectionRecipe(client).updateOne(new Document("recipeName", recipeName).append("author", author),
                 new Document("$set", convertRecipeEntity(recipe)));
+
         ConnectionMongo.closeConnection(client);
     }
 
     public void deleteRecipe(String recipeName, String author) {
         MongoClient client = ConnectionMongo.createConnection();
+
         getCollectionRecipe(client).deleteOne(new Document("recipeName", recipeName).append("author", author));
+
         ConnectionMongo.closeConnection(client);
     }
 

@@ -1,5 +1,6 @@
 package com.dbccompany.trabalhofinalmod5.service;
 
+import com.dbccompany.trabalhofinalmod5.dto.RecipeComplete;
 import com.dbccompany.trabalhofinalmod5.dto.RecipeDTO;
 import com.dbccompany.trabalhofinalmod5.dto.UserDTO;
 import com.dbccompany.trabalhofinalmod5.entity.RecipeEntity;
@@ -41,8 +42,8 @@ public class RecipeService {
         recipeRepository.deleteRecipe(recipeName, author);
     }
 
-    public RecipeEntity findByRecipeName(String recipeName) throws RecipeNotFoundException {
-        return recipeRepository.findByRecipeName(recipeName);
+    public RecipeComplete findByRecipeName(String recipeName) throws RecipeNotFoundException {
+        return objectMapper.convertValue(recipeRepository.findByRecipeName(recipeName), RecipeComplete.class);
     }
 
 

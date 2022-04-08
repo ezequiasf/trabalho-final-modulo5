@@ -1,8 +1,8 @@
 package com.dbccompany.trabalhofinalmod5.controller;
 
 
+import com.dbccompany.trabalhofinalmod5.dto.RecipeComplete;
 import com.dbccompany.trabalhofinalmod5.dto.RecipeDTO;
-import com.dbccompany.trabalhofinalmod5.entity.RecipeEntity;
 import com.dbccompany.trabalhofinalmod5.exception.CaloriesLimitExceededException;
 import com.dbccompany.trabalhofinalmod5.exception.PriceExpensiveException;
 import com.dbccompany.trabalhofinalmod5.exception.RecipeNotFoundException;
@@ -12,6 +12,7 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import lombok.RequiredArgsConstructor;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -27,6 +28,7 @@ public class RecipeController {
             @ApiResponse(code = 403, message = "Você não tem permissão para acessar este recurso"),
             @ApiResponse(code = 500, message = "Foi gerada uma exceção no sistema."),})
     @PostMapping("/saveRecipe")
+    @Validated
     public void saveRecipe(@Valid @RequestBody RecipeDTO recipe) throws PriceExpensiveException, CaloriesLimitExceededException, IllegalAccessException, UserDontExistException {
         recipeService.saveRecipe(recipe);
     }
@@ -36,6 +38,7 @@ public class RecipeController {
             @ApiResponse(code = 403, message = "Você não tem permissão para acessar este recurso"),
             @ApiResponse(code = 500, message = "Foi gerada uma exceção no sistema."),})
     @PutMapping("/updateRecipe")
+    @Validated
     public void updateRecipe(@RequestParam("recipeName") String recipeName,
                              @RequestParam("author") String author,
                              @Valid @RequestBody RecipeDTO recipe) {
@@ -57,7 +60,7 @@ public class RecipeController {
             @ApiResponse(code = 403, message = "Você não tem permissão para acessar este recurso"),
             @ApiResponse(code = 500, message = "Foi gerada uma exceção no sistema."),})
     @GetMapping("/findByRecipeName")
-    public RecipeEntity findByRecipeName(@RequestParam("recipeName") String recipeName) throws RecipeNotFoundException {
+    public RecipeComplete findByRecipeName(@RequestParam("recipeName") String recipeName) throws RecipeNotFoundException {
         return recipeService.findByRecipeName(recipeName);
     }
 }

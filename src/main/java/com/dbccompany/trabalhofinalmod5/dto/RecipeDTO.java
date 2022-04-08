@@ -37,6 +37,4 @@ public class RecipeDTO {
 
     @NotNull
     private List<String> ingredients;
-
-    private List<Classification> classifications;
 }
