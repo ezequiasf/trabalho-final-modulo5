@@ -34,9 +34,9 @@ public class RecipeDTO {
 
     @Digits(integer = 6, fraction = 2)
     @DecimalMin(value = "0.0", message = "Não é permitido números negativos.")
-    private BigDecimal calories;
+    private Double calories;
     @NotNull
     private List<String> ingredients;
-    @NotNull
+
     private List<Classification> classifications;
 }

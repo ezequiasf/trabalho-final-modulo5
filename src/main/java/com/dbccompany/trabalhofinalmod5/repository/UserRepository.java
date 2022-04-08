@@ -28,7 +28,6 @@ public class UserRepository {
         MongoClient client = ConnectionMongo.createConnection();
         Document docUser = getCollectionUser(client)
                 .find(new Document("username", username)).first();
-        ;
         ConnectionMongo.closeConnection(client);
         return convertDocument(docUser);
     }
@@ -89,7 +88,7 @@ public class UserRepository {
     }
 
     private UserEntity convertDocument(Document docUser) {
-        return UserEntity.builder().id(docUser.getObjectId("_id").toString())
+        return UserEntity.builder()
                 .username(docUser.getString("username"))
                 .age(docUser.getInteger("age"))
                 .email(docUser.getString("email"))

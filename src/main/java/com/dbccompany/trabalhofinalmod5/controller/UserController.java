@@ -21,7 +21,7 @@ public class UserController {
         userService.saveUser(user);
     }
 
-    @PutMapping("/updateRecipe")
+    @PutMapping("/updateUser")
     public void updateUser(@RequestParam("username") String username, @Valid @RequestBody UserDTO user) throws UserAlreadyExistsException {
             userService.updateUser(username,user);
     }

@@ -15,7 +15,7 @@ import javax.validation.constraints.Size;
 public class UserDTO {
     @NotBlank(message = "O usuário deve ser informado.")
     @Size(min = 1, max = 10, message = "O nome de usuário deve ter entre 1 e 10 caracteres.")
-    private String userName;
+    private String username;
 
     @NotBlank(message = "A senha deve ser informada.")
     @Size(min = 5, max = 10, message = "A senha deve ter entre 5 e 10 caracteres.")
@@ -27,5 +27,5 @@ public class UserDTO {
 
     private Integer age;
 
-    private Boolean isActive;
+    private Boolean isactive;
 }

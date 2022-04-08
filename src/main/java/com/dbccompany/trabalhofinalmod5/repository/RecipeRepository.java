@@ -8,7 +8,7 @@ import com.mongodb.client.MongoCollection;
 import org.bson.Document;
 import org.springframework.stereotype.Repository;
 
-import static com.mongodb.client.model.Filters.eq;
+import java.util.stream.Collectors;
 
 @Repository
 public class RecipeRepository {
@@ -34,7 +34,12 @@ public class RecipeRepository {
                         .append("price", recipe.getPrice())
                         .append("calories", recipe.getCalories())
                         .append("ingredients", recipe.getIngredients())
-                        .append("classifications", recipe.getClassifications())
+                        .append("classifications", recipe.getClassifications()
+                                .stream()
+                                .map(cl -> new Document("authorClass",
+                                        cl.getAuthorClass()).append("rating"
+                                        , cl.getRating()).append("coment", cl.getComent()))
+                                .collect(Collectors.toList()))
         );
         ConnectionMongo.closeConnection(client);
     }
@@ -46,7 +51,7 @@ public class RecipeRepository {
         ConnectionMongo.closeConnection(client);
     }
 
-    public void deleteRecipe (String recipeName, String author){
+    public void deleteRecipe(String recipeName, String author) {
         MongoClient client = ConnectionMongo.createConnection();
         getCollectionRecipe(client).deleteOne(new Document("recipeName", recipeName).append("author", author));
         ConnectionMongo.closeConnection(client);
@@ -58,9 +63,14 @@ public class RecipeRepository {
                 .author(docRecipe.getString("author"))
                 .calories(docRecipe.getDouble("calories"))
                 .prepareRecipe(docRecipe.getString("prepareRecipe"))
+                .price(docRecipe.getDouble("price"))
+                .prepareTime(docRecipe.getInteger("prepareTime"))
                 .ingredients(docRecipe.getList("ingredients", String.class))
-                .classifications(docRecipe.getList("classifications", Classification.class))
-                .build();
+                .classifications(docRecipe.getList("classifications", Document.class)
+                        .stream()
+                        .map(doc -> new Classification(doc.getString("authorClass"),
+                                doc.getDouble("rating"), doc.getString("coment")))
+                        .collect(Collectors.toList())).build();
     }
 
     private Document convertRecipeEntity(RecipeEntity recipe) {
@@ -70,7 +80,12 @@ public class RecipeRepository {
                 .append("prepareTime", recipe.getPrepareTime())
                 .append("calories", recipe.getCalories())
                 .append("ingredients", recipe.getIngredients())
-                .append("classifications", recipe.getClassifications());
+                .append("classifications", recipe.getClassifications()
+                        .stream()
+                        .map(cl -> new Document("authorClass",
+                                cl.getAuthorClass()).append("rating"
+                                , cl.getRating()).append("coment", cl.getComent()))
+                        .collect(Collectors.toList()));
     }
 
     private MongoCollection<Document> getCollectionRecipe(MongoClient client) {
