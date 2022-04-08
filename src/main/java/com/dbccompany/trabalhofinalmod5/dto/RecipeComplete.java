@@ -12,6 +12,6 @@ import java.util.List;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class RecipeComplete extends RecipeDTO{
+public class RecipeComplete extends RecipeDTO {
     private List<Classification> classifications;
 }

@@ -125,7 +125,7 @@ public class UserRepository {
                 .append("isactive", user.isIsactive());
     }
 
-    private UserEntity verifyIfUserDontExist (MongoClient client, String username) throws UserDontExistException {
+    private UserEntity verifyIfUserDontExist(MongoClient client, String username) throws UserDontExistException {
         Document docUser = getCollectionUser(client)
                 .find(new Document("username", username)).first();
 

@@ -1,7 +1,7 @@
 package com.dbccompany.trabalhofinalmod5.dto;
 
-import com.dbccompany.trabalhofinalmod5.entity.Classification;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -11,6 +11,7 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
+@Builder
 public class RecipeDTO {
     @NotBlank(message = "O nome do autor deve ser informado.")
     @Size(min = 2, max = 40, message = "O nome ddo autor deve estar entre 2 e 15 caracteres.")

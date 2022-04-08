@@ -25,7 +25,7 @@ public class UserController {
             @ApiResponse(code = 403, message = "Você não tem permissão para acessar este recurso"),
             @ApiResponse(code = 500, message = "Foi gerada uma exceção no sistema."),})
     @PostMapping("/saveUser")
-    public void saveUser(@Valid @RequestBody UserDTO user) throws UserAlreadyExistsException {
+    public void saveUser(@Valid @RequestBody UserDTO user) throws UserAlreadyExistsException, IllegalAccessException {
         userService.saveUser(user);
     }
 

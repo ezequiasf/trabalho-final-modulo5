@@ -42,7 +42,8 @@ public class RecipeRepository {
                         .append("prepareTime", recipe.getPrepareTime())
                         .append("price", recipe.getPrice())
                         .append("calories", recipe.getCalories())
-                        .append("ingredients", recipe.getIngredients()));
+                        .append("ingredients", recipe.getIngredients())
+        );
 
         ConnectionMongo.closeConnection(client);
     }
