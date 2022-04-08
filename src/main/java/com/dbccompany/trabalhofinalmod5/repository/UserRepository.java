@@ -13,7 +13,6 @@ import org.springframework.stereotype.Repository;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Iterator;
 import java.util.List;
 
 import static com.mongodb.client.model.Filters.eq;
@@ -34,23 +33,25 @@ public class UserRepository {
         return convertDocument(docUser);
     }
 
-    public void aggregatingUser(Bson pipeline, Bson... options) {
+    public List<UserEntity> aggregatingUser(Bson pipeline, Bson... options) {
         MongoClient client = ConnectionMongo.createConnection();
+        List<UserEntity> userEntities = new ArrayList<>();
         List<Bson> aggregation = new ArrayList<>();
         aggregation.add(pipeline);
         aggregation.addAll(Arrays.asList(options));
-        getCollectionUser(client).aggregate(aggregation).forEach(doc -> System.out.println(doc.toJson()));
+        getCollectionUser(client).aggregate(aggregation).forEach(doc -> userEntities.add(convertDocument(doc)));
         ConnectionMongo.closeConnection(client);
+        return userEntities;
     }
 
-    public void findAllProjection(String... fields) {
+    public List<UserEntity> findAllProjection(String... fields) {
         MongoClient client = ConnectionMongo.createConnection();
+        List<UserEntity> userEntities = new ArrayList<>();
         Bson projection = fields(Projections.include(fields), Projections.excludeId());
         FindIterable<Document> users = getCollectionUser(client).find().projection(projection);
-        Iterator<Document> it = users.iterator();
-        while (it.hasNext())
-            System.out.println(it.next().toJson());
+        users.forEach(document -> userEntities.add(convertDocument(document)));
         ConnectionMongo.closeConnection(client);
+        return userEntities;
     }
 
     public void saveUser(UserEntity user) throws UserAlreadyExistsException {
@@ -60,19 +61,14 @@ public class UserRepository {
         if (docUser != null) {
             throw new UserAlreadyExistsException("User already created!");
         }
-        getCollectionUser(client).insertOne(
-                new Document("username", user.getUsername())
-                        .append("email", user.getEmail())
-                        .append("password", user.getPassword())
-                        .append("isactive", user.isIsactive())
-        );
+        getCollectionUser(client).insertOne(convertUserEntity(user));
         ConnectionMongo.closeConnection(client);
     }
 
-    public void updateUser(String username, String attr, String value) {
+    public void updateUser(String username, UserEntity newUser) {
         MongoClient client = ConnectionMongo.createConnection();
         getCollectionUser(client).updateOne(eq("username", username),
-                new Document("$set", new Document(attr, value)));
+                new Document("$set", convertUserEntity(newUser)));
         ConnectionMongo.closeConnection(client);
     }
 
@@ -94,6 +90,14 @@ public class UserRepository {
                 .password(docUser.getString("password"))
                 .isactive(docUser.getBoolean("isactive"))
                 .build();
+    }
+
+    private Document convertUserEntity(UserEntity user) {
+        return new Document("username", user.getUsername())
+                .append("email", user.getEmail())
+                .append(("age"), user.getAge())
+                .append("password", user.getPassword())
+                .append("isactive", user.isIsactive());
     }
 
 }
