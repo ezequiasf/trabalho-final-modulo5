@@ -34,7 +34,7 @@ public class UserController {
             @ApiResponse(code = 403, message = "Você não tem permissão para acessar este recurso"),
             @ApiResponse(code = 500, message = "Foi gerada uma exceção no sistema."),})
     @PutMapping("/updateUser")
-    public void updateUser(@RequestParam("username") String username, @Valid @RequestBody UserUpdateDTO user) throws UserAlreadyExistsException, UserDontExistException {
+    public void updateUser(@RequestParam("username") String username, @Valid @RequestBody UserUpdateDTO user) throws UserDontExistException {
         userService.updateUser(username, user);
     }
 
@@ -53,7 +53,7 @@ public class UserController {
             @ApiResponse(code = 403, message = "Você não tem permissão para acessar este recurso"),
             @ApiResponse(code = 500, message = "Foi gerada uma exceção no sistema."),})
     @GetMapping("/findByUserName")
-    public UserDTO findByUsername(@RequestParam("username") String username) throws UserDontExistException {
+    public UserDTO findByUsername(@RequestParam("username") String username) {
         return userService.findByUsername(username);
     }
 

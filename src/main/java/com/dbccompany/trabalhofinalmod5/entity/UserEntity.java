@@ -8,10 +8,10 @@ import lombok.*;
 @AllArgsConstructor
 @NoArgsConstructor
 public class UserEntity {
-    private String id;
+    private String objectId;
     private String username;
-    private Integer age;
     private String password;
     private String email;
+    private Integer age;
     private boolean isactive;
 }

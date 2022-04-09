@@ -10,7 +10,7 @@ import java.util.List;
 @AllArgsConstructor
 @Builder
 public class RecipeEntity {
-    private String id;
+    private String objectId;
     private String author;
     private String recipeName;
     private String prepareRecipe;

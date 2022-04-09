@@ -66,7 +66,7 @@ public class RecipeRepository {
     }
 
     private RecipeEntity convertDocument(Document docRecipe) {
-        return RecipeEntity.builder().id(docRecipe.getObjectId("_id").toString())
+       return RecipeEntity.builder().objectId(docRecipe.getObjectId("_id").toString())
                 .recipeName(docRecipe.getString("recipeName"))
                 .author(docRecipe.getString("author"))
                 .calories(docRecipe.getDouble("calories"))
@@ -101,7 +101,7 @@ public class RecipeRepository {
                 .collect(Collectors.toList());
     }
 
-    private MongoCollection<Document> getCollectionRecipe(MongoClient client) {
+    public MongoCollection<Document> getCollectionRecipe(MongoClient client) {
         return client.getDatabase(DATABASE).getCollection(COLLECTION);
     }
 }

@@ -4,10 +4,7 @@ import com.dbccompany.trabalhofinalmod5.dto.RecipeComplete;
 import com.dbccompany.trabalhofinalmod5.dto.RecipeDTO;
 import com.dbccompany.trabalhofinalmod5.dto.UserDTO;
 import com.dbccompany.trabalhofinalmod5.entity.RecipeEntity;
-import com.dbccompany.trabalhofinalmod5.exception.CaloriesLimitExceededException;
-import com.dbccompany.trabalhofinalmod5.exception.PriceExpensiveException;
-import com.dbccompany.trabalhofinalmod5.exception.RecipeNotFoundException;
-import com.dbccompany.trabalhofinalmod5.exception.UserDontExistException;
+import com.dbccompany.trabalhofinalmod5.exception.*;
 import com.dbccompany.trabalhofinalmod5.repository.RecipeRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
@@ -20,7 +17,7 @@ public class RecipeService {
     private final RecipeRepository recipeRepository;
     private final ObjectMapper objectMapper;
 
-    public void saveRecipe(RecipeDTO recipe) throws PriceExpensiveException, CaloriesLimitExceededException, IllegalAccessException, UserDontExistException {
+    public void saveRecipe(RecipeDTO recipe) throws PriceExpensiveException, CaloriesLimitExceededException, IllegalAccessException, UserDontExistException, UserAlreadyExistsException {
         if (recipe.getPrice() > 300) {
             throw new PriceExpensiveException("Price too much expensive!");
         }
@@ -42,7 +39,7 @@ public class RecipeService {
         recipeRepository.deleteRecipe(recipeName, author);
     }
 
-    public RecipeComplete findByRecipeName(String recipeName) throws RecipeNotFoundException {
+    public RecipeComplete findByRecipeNameService(String recipeName) throws RecipeNotFoundException {
         return objectMapper.convertValue(recipeRepository.findByRecipeName(recipeName), RecipeComplete.class);
     }
 
