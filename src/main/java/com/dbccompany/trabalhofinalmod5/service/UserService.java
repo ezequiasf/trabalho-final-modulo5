@@ -1,6 +1,7 @@
 package com.dbccompany.trabalhofinalmod5.service;
 
 import com.dbccompany.trabalhofinalmod5.dto.UserDTO;
+import com.dbccompany.trabalhofinalmod5.dto.UserShowDTO;
 import com.dbccompany.trabalhofinalmod5.dto.UserUpdateDTO;
 import com.dbccompany.trabalhofinalmod5.entity.UserEntity;
 import com.dbccompany.trabalhofinalmod5.exception.UserAlreadyExistsException;
@@ -16,13 +17,13 @@ public class UserService {
     private final UserRepository userRepository;
     private final ObjectMapper objectMapper;
 
-    public String saveUser(UserDTO user) throws UserAlreadyExistsException, IllegalAccessException {
+    public String saveUser(UserDTO user) throws UserAlreadyExistsException, IllegalAccessException, UserDontExistException {
         UserEntity userEntity = objectMapper.convertValue(user, UserEntity.class);
 
         if (!verifyAge(userEntity)) {
             throw new IllegalAccessException("User too young!");
         }
-        if (findByUsername(userEntity.getUsername()) != null) {
+        if (userRepository.findByUsername(userEntity.getUsername()) != null) {
             throw new UserAlreadyExistsException("User already exists!");
         }
         return userRepository.saveUser(userEntity);
@@ -35,12 +36,9 @@ public class UserService {
         return userRepository.updateUser(id, userPersist);
     }
 
-    public UserDTO findByUsername(String username) {
+    public UserShowDTO findByUsername(String username) throws UserDontExistException {
         UserEntity user = userRepository.findByUsername(username);
-        if (user != null) {
-            return objectMapper.convertValue(user, UserDTO.class);
-        }
-        return null;
+        return objectMapper.convertValue(user, UserShowDTO.class);
     }
 
     public UserEntity findById(String hexId) throws UserDontExistException {

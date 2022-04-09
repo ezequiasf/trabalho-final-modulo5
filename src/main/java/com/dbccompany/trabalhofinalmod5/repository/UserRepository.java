@@ -2,6 +2,7 @@ package com.dbccompany.trabalhofinalmod5.repository;
 
 import com.dbccompany.trabalhofinalmod5.config.ConnectionMongo;
 import com.dbccompany.trabalhofinalmod5.entity.UserEntity;
+import com.dbccompany.trabalhofinalmod5.exception.UserDontExistException;
 import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoCollection;
@@ -10,6 +11,7 @@ import org.bson.BsonValue;
 import org.bson.Document;
 import org.bson.conversions.Bson;
 import org.bson.types.ObjectId;
+import org.json.JSONObject;
 import org.springframework.stereotype.Repository;
 
 import java.util.ArrayList;
@@ -44,7 +46,7 @@ public class UserRepository {
         return convertDocument(docUser);
     }
 
-    public String updateUser(String hexId, UserEntity newUser) {
+    public String updateUser(String hexId, UserEntity newUser) throws UserDontExistException {
         MongoClient client = ConnectionMongo.createConnection();
 
         UserEntity user = findByUsername(newUser.getUsername());
@@ -66,13 +68,39 @@ public class UserRepository {
     }
 
 
-    public UserEntity findByUsername(String username) {
+    public UserEntity findByUsername(String username) throws UserDontExistException {
         MongoClient client = ConnectionMongo.createConnection();
 
         Document docUser = getCollectionUser(client).find(new Document("username", username)).first();
-
+        if (docUser == null){
+            throw new UserDontExistException("User dont exists!");
+        }
         ConnectionMongo.closeConnection(client);
         return convertDocument(docUser);
+    }
+
+    private MongoCollection<Document> getCollectionUser(MongoClient client) {
+        return client.getDatabase(DATABASE).getCollection(COLLECTION);
+    }
+
+    private UserEntity convertDocument(Document docUser) {
+        JSONObject jsonObject = new JSONObject(docUser.toJson());
+        return UserEntity.builder()
+                .objectId(jsonObject.getJSONObject("_id").getString("$oid"))
+                .username(docUser.getString("username"))
+                .password(docUser.getString("password"))
+                .email(docUser.getString("email"))
+                .age(docUser.getInteger("age"))
+                .isactive(docUser.getBoolean("isactive"))
+                .build();
+    }
+
+    private Document convertUserEntity(UserEntity user) {
+        return new Document("username", user.getUsername())
+                .append("email", user.getEmail())
+                .append(("age"), user.getAge())
+                .append("password", user.getPassword())
+                .append("isactive", user.isIsactive());
     }
 
     public List<UserEntity> aggregatingUser(Bson pipeline, Bson... options) {
@@ -104,29 +132,6 @@ public class UserRepository {
 
         ConnectionMongo.closeConnection(client);
         return userEntities;
-    }
-
-    private MongoCollection<Document> getCollectionUser(MongoClient client) {
-        return client.getDatabase(DATABASE).getCollection(COLLECTION);
-    }
-
-    private UserEntity convertDocument(Document docUser) {
-        return UserEntity.builder()
-                .objectId(docUser.getString("_id"))
-                .username(docUser.getString("username"))
-                .password(docUser.getString("password"))
-                .email(docUser.getString("email"))
-                .age(docUser.getInteger("age"))
-                .isactive(docUser.getBoolean("isactive"))
-                .build();
-    }
-
-    private Document convertUserEntity(UserEntity user) {
-        return new Document("username", user.getUsername())
-                .append("email", user.getEmail())
-                .append(("age"), user.getAge())
-                .append("password", user.getPassword())
-                .append("isactive", user.isIsactive());
     }
 
 }

@@ -1,6 +1,7 @@
 package com.dbccompany.trabalhofinalmod5.controller;
 
 import com.dbccompany.trabalhofinalmod5.dto.UserDTO;
+import com.dbccompany.trabalhofinalmod5.dto.UserShowDTO;
 import com.dbccompany.trabalhofinalmod5.dto.UserUpdateDTO;
 import com.dbccompany.trabalhofinalmod5.exception.UserAlreadyExistsException;
 import com.dbccompany.trabalhofinalmod5.exception.UserDontExistException;
@@ -25,7 +26,7 @@ public class UserController {
             @ApiResponse(code = 403, message = "Você não tem permissão para acessar este recurso"),
             @ApiResponse(code = 500, message = "Foi gerada uma exceção no sistema."),})
     @PostMapping("/saveUser")
-    public void saveUser(@Valid @RequestBody UserDTO user) throws UserAlreadyExistsException, IllegalAccessException {
+    public void saveUser(@Valid @RequestBody UserDTO user) throws UserAlreadyExistsException, IllegalAccessException, UserDontExistException {
         userService.saveUser(user);
     }
 
@@ -43,8 +44,8 @@ public class UserController {
             @ApiResponse(code = 403, message = "Você não tem permissão para acessar este recurso"),
             @ApiResponse(code = 500, message = "Foi gerada uma exceção no sistema."),})
     @DeleteMapping("/deleteUser")
-    public void deleteUser(@RequestParam("username") String username) {
-        userService.deleteUser(username);
+    public void deleteUser(@RequestParam("hexId") String hexId) {
+        userService.deleteUser(hexId);
     }
 
 
@@ -53,7 +54,7 @@ public class UserController {
             @ApiResponse(code = 403, message = "Você não tem permissão para acessar este recurso"),
             @ApiResponse(code = 500, message = "Foi gerada uma exceção no sistema."),})
     @GetMapping("/findByUserName")
-    public UserDTO findByUsername(@RequestParam("username") String username) {
+    public UserShowDTO findByUsername(@RequestParam("username") String username) throws UserDontExistException {
         return userService.findByUsername(username);
     }
 
