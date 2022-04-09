@@ -41,7 +41,6 @@ public class RecipeRepository {
                         .append("price", recipe.getPrice())
                         .append("calories", recipe.getCalories())
                         .append("ingredients", recipe.getIngredients())
-//                        .append("classifications", Arrays.asList(new Document()))
         ).getInsertedId();
 
         ConnectionMongo.closeConnection(client);
