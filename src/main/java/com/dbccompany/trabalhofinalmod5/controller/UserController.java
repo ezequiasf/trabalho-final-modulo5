@@ -26,8 +26,8 @@ public class UserController {
             @ApiResponse(code = 403, message = "Você não tem permissão para acessar este recurso"),
             @ApiResponse(code = 500, message = "Foi gerada uma exceção no sistema."),})
     @PostMapping("/saveUser")
-    public void saveUser(@Valid @RequestBody UserDTO user) throws UserAlreadyExistsException, IllegalAccessException, UserDontExistException {
-        userService.saveUser(user);
+    public String saveUser(@Valid @RequestBody UserDTO user) throws UserAlreadyExistsException, IllegalAccessException {
+        return userService.saveUser(user);
     }
 
     @ApiOperation(value = "Atualiza um usuário no banco de dados.")
@@ -35,8 +35,8 @@ public class UserController {
             @ApiResponse(code = 403, message = "Você não tem permissão para acessar este recurso"),
             @ApiResponse(code = 500, message = "Foi gerada uma exceção no sistema."),})
     @PutMapping("/updateUser")
-    public void updateUser(@RequestParam("username") String username, @Valid @RequestBody UserUpdateDTO user) throws UserDontExistException {
-        userService.updateUser(username, user);
+    public void updateUser(@RequestParam("hexId") String hexId, @Valid @RequestBody UserUpdateDTO user) throws UserDontExistException {
+        userService.updateUser(hexId, user);
     }
 
     @ApiOperation(value = "Deleta um usuário do banco de dados.")
@@ -54,7 +54,7 @@ public class UserController {
             @ApiResponse(code = 403, message = "Você não tem permissão para acessar este recurso"),
             @ApiResponse(code = 500, message = "Foi gerada uma exceção no sistema."),})
     @GetMapping("/findByUserName")
-    public UserShowDTO findByUsername(@RequestParam("username") String username) throws UserDontExistException {
+    public UserShowDTO findByUsername(@RequestParam("username") String username) {
         return userService.findByUsername(username);
     }
 

@@ -2,7 +2,6 @@ package com.dbccompany.trabalhofinalmod5.repository;
 
 import com.dbccompany.trabalhofinalmod5.config.ConnectionMongo;
 import com.dbccompany.trabalhofinalmod5.entity.UserEntity;
-import com.dbccompany.trabalhofinalmod5.exception.UserDontExistException;
 import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoCollection;
@@ -18,7 +17,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import static com.mongodb.client.model.Filters.eq;
 import static com.mongodb.client.model.Projections.fields;
 
 @Repository
@@ -26,17 +24,6 @@ public class UserRepository {
 
     private final static String DATABASE = "recipes_app";
     private final static String COLLECTION = "users";
-
-    public String saveUser(UserEntity user) {
-        MongoClient client = ConnectionMongo.createConnection();
-
-        MongoCollection<Document> userCollection = getCollectionUser(client);
-
-        BsonValue objId = userCollection.insertOne(convertUserEntity(user)).getInsertedId();
-        ConnectionMongo.closeConnection(client);
-
-        return objId.asObjectId().getValue().toHexString();
-    }
 
     public UserEntity findById(String hexId) {
         MongoClient client = ConnectionMongo.createConnection();
@@ -46,17 +33,25 @@ public class UserRepository {
         return convertDocument(docUser);
     }
 
-    public String updateUser(String hexId, UserEntity newUser) throws UserDontExistException {
+    public String saveUser(UserEntity user) {
         MongoClient client = ConnectionMongo.createConnection();
 
-        UserEntity user = findByUsername(newUser.getUsername());
-        newUser.setUsername(user.getUsername());
+        MongoCollection<Document> userCollection = getCollectionUser(client);
 
-        BsonValue objId = getCollectionUser(client).updateOne(eq("_id", new ObjectId(hexId)),
-                new Document("$set", convertUserEntity(newUser))).getUpsertedId();
+        BsonValue objId = userCollection.insertOne(convertUserEntity(user)).getInsertedId();
 
         ConnectionMongo.closeConnection(client);
+
         return objId.asObjectId().getValue().toHexString();
+    }
+
+    public void updateUser(String hexId, UserEntity newUser) {
+        MongoClient client = ConnectionMongo.createConnection();
+
+        getCollectionUser(client).updateOne(new Document("_id", new ObjectId(hexId)),
+                new Document("$set", convertUserEntity(newUser)));
+
+        ConnectionMongo.closeConnection(client);
     }
 
     public void deleteUser(String hexId) {
@@ -68,15 +63,16 @@ public class UserRepository {
     }
 
 
-    public UserEntity findByUsername(String username) throws UserDontExistException {
+    public UserEntity findByUsername(String username) {
         MongoClient client = ConnectionMongo.createConnection();
 
         Document docUser = getCollectionUser(client).find(new Document("username", username)).first();
-        if (docUser == null){
-            throw new UserDontExistException("User dont exists!");
-        }
+
         ConnectionMongo.closeConnection(client);
-        return convertDocument(docUser);
+        if (docUser != null) {
+            return convertDocument(docUser);
+        }
+        return null;
     }
 
     private MongoCollection<Document> getCollectionUser(MongoClient client) {

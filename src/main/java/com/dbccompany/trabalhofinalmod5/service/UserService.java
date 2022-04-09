@@ -17,7 +17,7 @@ public class UserService {
     private final UserRepository userRepository;
     private final ObjectMapper objectMapper;
 
-    public String saveUser(UserDTO user) throws UserAlreadyExistsException, IllegalAccessException, UserDontExistException {
+    public String saveUser(UserDTO user) throws UserAlreadyExistsException, IllegalAccessException {
         UserEntity userEntity = objectMapper.convertValue(user, UserEntity.class);
 
         if (!verifyAge(userEntity)) {
@@ -29,14 +29,14 @@ public class UserService {
         return userRepository.saveUser(userEntity);
     }
 
-    public String updateUser(String id, UserUpdateDTO user) throws UserDontExistException {
+    public void updateUser(String id, UserUpdateDTO user) throws UserDontExistException {
         UserEntity userEntity = findById(id);
         UserEntity userPersist = objectMapper.convertValue(user, UserEntity.class);
         userPersist.setUsername(userEntity.getUsername());
-        return userRepository.updateUser(id, userPersist);
+        userRepository.updateUser(id, userPersist);
     }
 
-    public UserShowDTO findByUsername(String username) throws UserDontExistException {
+    public UserShowDTO findByUsername(String username) {
         UserEntity user = userRepository.findByUsername(username);
         return objectMapper.convertValue(user, UserShowDTO.class);
     }
