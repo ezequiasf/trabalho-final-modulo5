@@ -66,7 +66,6 @@ public class RecipeService {
         return recipeEntity;
     }
 
-
     public void deleteClassification(String hexId, String objectIdRecipe) {
         UserEntity user = userRepository.findById(hexId);
         recipeRepository.deleteClassification(user.getUsername(), objectIdRecipe);
