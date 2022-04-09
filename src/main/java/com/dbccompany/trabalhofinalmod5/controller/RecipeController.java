@@ -3,6 +3,7 @@ package com.dbccompany.trabalhofinalmod5.controller;
 
 import com.dbccompany.trabalhofinalmod5.dto.RecipeComplete;
 import com.dbccompany.trabalhofinalmod5.dto.RecipeDTO;
+import com.dbccompany.trabalhofinalmod5.dto.RecipeUpdateDTO;
 import com.dbccompany.trabalhofinalmod5.exception.*;
 import com.dbccompany.trabalhofinalmod5.service.RecipeService;
 import io.swagger.annotations.ApiOperation;
@@ -26,8 +27,8 @@ public class RecipeController {
             @ApiResponse(code = 500, message = "Foi gerada uma exceção no sistema."),})
     @PostMapping("/saveRecipe")
     @Validated
-    public void saveRecipe(@Valid @RequestBody RecipeDTO recipe) throws PriceExpensiveException, CaloriesLimitExceededException, IllegalAccessException, UserDontExistException, UserAlreadyExistsException {
-        recipeService.saveRecipe(recipe);
+    public String saveRecipe(@Valid @RequestBody RecipeDTO recipe) throws PriceExpensiveException, CaloriesLimitExceededException, IllegalAccessException, UserDontExistException, UserAlreadyExistsException {
+        return recipeService.saveRecipe(recipe);
     }
 
     @ApiOperation(value = "Atualiza uma receita no banco de dados.")
@@ -36,10 +37,9 @@ public class RecipeController {
             @ApiResponse(code = 500, message = "Foi gerada uma exceção no sistema."),})
     @PutMapping("/updateRecipe")
     @Validated
-    public void updateRecipe(@RequestParam("recipeName") String recipeName,
-                             @RequestParam("author") String author,
-                             @Valid @RequestBody RecipeDTO recipe) {
-        recipeService.updateRecipe(recipeName, author, recipe);
+    public void updateRecipe(@RequestParam("hexId") String hexId,
+                             @Valid @RequestBody RecipeUpdateDTO recipe) throws RecipeNotFoundException {
+        recipeService.updateRecipe(hexId, recipe);
     }
 
     @ApiOperation(value = "Deleta uma receita do banco de dados.")
@@ -47,9 +47,8 @@ public class RecipeController {
             @ApiResponse(code = 403, message = "Você não tem permissão para acessar este recurso"),
             @ApiResponse(code = 500, message = "Foi gerada uma exceção no sistema."),})
     @DeleteMapping("/deleteRecipe")
-    public void deleteRecipe(@RequestParam("recipeName") String recipeName,
-                             @RequestParam("author") String author) {
-        recipeService.deleteRecipe(recipeName, author);
+    public void deleteRecipe(@RequestParam("hexId") String hexId) {
+        recipeService.deleteRecipe(hexId);
     }
 
     @ApiOperation(value = "Encnontrar receitas pelo nome.")
@@ -58,6 +57,6 @@ public class RecipeController {
             @ApiResponse(code = 500, message = "Foi gerada uma exceção no sistema."),})
     @GetMapping("/findByRecipeName")
     public RecipeComplete findByRecipeName(@RequestParam("recipeName") String recipeName) throws RecipeNotFoundException {
-        return recipeService.findByRecipeNameService(recipeName);
+        return recipeService.findByRecipeName(recipeName);
     }
 }

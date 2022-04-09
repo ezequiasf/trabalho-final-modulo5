@@ -6,7 +6,9 @@ import com.dbccompany.trabalhofinalmod5.entity.RecipeEntity;
 import com.dbccompany.trabalhofinalmod5.exception.RecipeNotFoundException;
 import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoCollection;
+import org.bson.BsonValue;
 import org.bson.Document;
+import org.bson.types.ObjectId;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -17,6 +19,41 @@ public class RecipeRepository {
 
     private final static String DATABASE = "recipes_app";
     private final static String COLLECTION = "recipes";
+
+    public RecipeEntity findById(String hexId) {
+        MongoClient client = ConnectionMongo.createConnection();
+
+        Document docRecipe = getCollectionRecipe(client).find(new Document("_id", new ObjectId(hexId))).first();
+
+        return convertDocument(docRecipe);
+    }
+
+    public String saveRecipe(RecipeEntity recipe) {
+        MongoClient client = ConnectionMongo.createConnection();
+
+        BsonValue objId = getCollectionRecipe(client).insertOne(
+                new Document("author", recipe.getAuthor())
+                        .append("recipeName", recipe.getRecipeName())
+                        .append("prepareRecipe", recipe.getPrepareRecipe())
+                        .append("prepareTime", recipe.getPrepareTime())
+                        .append("price", recipe.getPrice())
+                        .append("calories", recipe.getCalories())
+                        .append("ingredients", recipe.getIngredients())
+                        .append("classifications", new Document())
+        ).getInsertedId();
+
+        ConnectionMongo.closeConnection(client);
+        return objId.asObjectId().getValue().toHexString();
+    }
+
+    public void updateRecipe(String hexId, RecipeEntity recipe) {
+        MongoClient client = ConnectionMongo.createConnection();
+
+        getCollectionRecipe(client).updateOne(new Document("_id", new ObjectId(hexId)),
+                new Document("$set", convertRecipeEntity(recipe)));
+
+        ConnectionMongo.closeConnection(client);
+    }
 
     public RecipeEntity findByRecipeName(String recipeName) throws RecipeNotFoundException {
         MongoClient client = ConnectionMongo.createConnection();
@@ -32,41 +69,16 @@ public class RecipeRepository {
         throw new RecipeNotFoundException("Recipe not found!");
     }
 
-    public void saveRecipe(RecipeEntity recipe) {
+    public void deleteRecipe(String hexId) {
         MongoClient client = ConnectionMongo.createConnection();
 
-        getCollectionRecipe(client).insertOne(
-                new Document("author", recipe.getAuthor())
-                        .append("recipeName", recipe.getRecipeName())
-                        .append("prepareRecipe", recipe.getPrepareRecipe())
-                        .append("prepareTime", recipe.getPrepareTime())
-                        .append("price", recipe.getPrice())
-                        .append("calories", recipe.getCalories())
-                        .append("ingredients", recipe.getIngredients())
-        );
-
-        ConnectionMongo.closeConnection(client);
-    }
-
-    public void updateRecipe(String recipeName, String author, RecipeEntity recipe) {
-        MongoClient client = ConnectionMongo.createConnection();
-
-        getCollectionRecipe(client).updateOne(new Document("recipeName", recipeName).append("author", author),
-                new Document("$set", convertRecipeEntity(recipe)));
-
-        ConnectionMongo.closeConnection(client);
-    }
-
-    public void deleteRecipe(String recipeName, String author) {
-        MongoClient client = ConnectionMongo.createConnection();
-
-        getCollectionRecipe(client).deleteOne(new Document("recipeName", recipeName).append("author", author));
+        getCollectionRecipe(client).findOneAndDelete(new Document("_id", new ObjectId(hexId)));
 
         ConnectionMongo.closeConnection(client);
     }
 
     private RecipeEntity convertDocument(Document docRecipe) {
-       return RecipeEntity.builder().objectId(docRecipe.getObjectId("_id").toString())
+        RecipeEntity recipeEntity = RecipeEntity.builder().objectId(docRecipe.getObjectId("_id").toString())
                 .recipeName(docRecipe.getString("recipeName"))
                 .author(docRecipe.getString("author"))
                 .calories(docRecipe.getDouble("calories"))
@@ -74,14 +86,17 @@ public class RecipeRepository {
                 .price(docRecipe.getDouble("price"))
                 .prepareTime(docRecipe.getInteger("prepareTime"))
                 .ingredients(docRecipe.getList("ingredients", String.class))
-                .classifications(docRecipe.getList("classifications", Document.class)
-                        .stream()
-                        .map(doc -> Classification.builder()
-                                .authorClass(doc.getString("authorClass"))
-                                .rating(doc.getDouble("rating"))
-                                .coment(doc.getString("coment"))
-                                .build())
-                        .collect(Collectors.toList())).build();
+                .build();
+        List<Document> docClass = docRecipe.getList("classifications", Document.class);
+        if (docClass != null) {
+            recipeEntity.setClassifications(docClass.stream()
+                    .map(doc -> Classification.builder()
+                            .authorClass(doc.getString("authorClass"))
+                            .rating(doc.getDouble("rating"))
+                            .coment(doc.getString("coment"))
+                            .build()).collect(Collectors.toList()));
+        }
+        return recipeEntity;
     }
 
     private Document convertRecipeEntity(RecipeEntity recipe) {
@@ -90,15 +105,7 @@ public class RecipeRepository {
                 .append(("prepareRecipe"), recipe.getPrepareRecipe())
                 .append("prepareTime", recipe.getPrepareTime())
                 .append("calories", recipe.getCalories())
-                .append("ingredients", recipe.getIngredients())
-                .append("classifications", converClassificationToDocument(recipe.getClassifications()));
-    }
-
-    private List<Document> converClassificationToDocument(List<Classification> cla) {
-        return cla.stream().map(cl -> new Document("authorClass", cl.getAuthorClass())
-                        .append("rating", cl.getRating())
-                        .append("coment", cl.getComent()))
-                .collect(Collectors.toList());
+                .append("ingredients", recipe.getIngredients());
     }
 
     public MongoCollection<Document> getCollectionRecipe(MongoClient client) {
