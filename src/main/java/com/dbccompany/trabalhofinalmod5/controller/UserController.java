@@ -1,8 +1,10 @@
 package com.dbccompany.trabalhofinalmod5.controller;
 
+import com.dbccompany.trabalhofinalmod5.dto.ClassificationDTO;
 import com.dbccompany.trabalhofinalmod5.dto.UserDTO;
 import com.dbccompany.trabalhofinalmod5.dto.UserShowDTO;
 import com.dbccompany.trabalhofinalmod5.dto.UserUpdateDTO;
+import com.dbccompany.trabalhofinalmod5.exception.RecipeNotFoundException;
 import com.dbccompany.trabalhofinalmod5.exception.UserAlreadyExistsException;
 import com.dbccompany.trabalhofinalmod5.exception.UserDontExistException;
 import com.dbccompany.trabalhofinalmod5.service.UserService;
@@ -56,6 +58,15 @@ public class UserController {
     @GetMapping("/findByUserName")
     public UserShowDTO findByUsername(@RequestParam("username") String username) {
         return userService.findByUsername(username);
+    }
+
+    @ApiOperation(value = "Posta uma classificação para uma receita.")
+    @ApiResponses(value = {@ApiResponse(code = 200, message = "A classificação foi postada com sucesso."),
+            @ApiResponse(code = 403, message = "Você não tem permissão para acessar este recurso"),
+            @ApiResponse(code = 500, message = "Foi gerada uma exceção no sistema."),})
+    @PostMapping("/{userObjectId}")
+    public void postClassification(@PathVariable("userObjectId") String hexId, @RequestBody ClassificationDTO classificationDTO) throws RecipeNotFoundException, UserDontExistException {
+        userService.postClassification(hexId, classificationDTO);
     }
 
 

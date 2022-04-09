@@ -1,12 +1,16 @@
 package com.dbccompany.trabalhofinalmod5.service;
 
-import com.dbccompany.trabalhofinalmod5.dto.RecipeComplete;
 import com.dbccompany.trabalhofinalmod5.dto.RecipeDTO;
+import com.dbccompany.trabalhofinalmod5.dto.RecipeShowDTO;
 import com.dbccompany.trabalhofinalmod5.dto.RecipeUpdateDTO;
-import com.dbccompany.trabalhofinalmod5.dto.UserDTO;
 import com.dbccompany.trabalhofinalmod5.entity.RecipeEntity;
-import com.dbccompany.trabalhofinalmod5.exception.*;
+import com.dbccompany.trabalhofinalmod5.entity.UserEntity;
+import com.dbccompany.trabalhofinalmod5.exception.CaloriesLimitExceededException;
+import com.dbccompany.trabalhofinalmod5.exception.PriceExpensiveException;
+import com.dbccompany.trabalhofinalmod5.exception.RecipeNotFoundException;
+import com.dbccompany.trabalhofinalmod5.exception.UserDontExistException;
 import com.dbccompany.trabalhofinalmod5.repository.RecipeRepository;
+import com.dbccompany.trabalhofinalmod5.repository.UserRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -14,7 +18,7 @@ import org.springframework.stereotype.Service;
 @Service
 @RequiredArgsConstructor
 public class RecipeService {
-    private final UserService userService;
+    private final UserRepository useruserRepository;
     private final RecipeRepository recipeRepository;
     private final ObjectMapper objectMapper;
 
@@ -25,11 +29,11 @@ public class RecipeService {
         if (recipe.getCalories() > 1500) {
             throw new CaloriesLimitExceededException("Food too much fat!");
         }
-        UserDTO user = userService.findByUsername(recipe.getAuthor());
+        UserEntity user = useruserRepository.findByUsername(recipe.getAuthor());
         if (user == null) {
             throw new UserDontExistException("User don't exists!");
         }
-        if (!user.getIsactive()) {
+        if (!user.isActive()) {
             throw new IllegalAccessException("User not active!");
         }
         return recipeRepository.saveRecipe(objectMapper.convertValue(recipe, RecipeEntity.class));
@@ -42,12 +46,16 @@ public class RecipeService {
         recipeRepository.updateRecipe(hexId, recipePersist);
     }
 
+    public void updateClassifications(String hexId, RecipeShowDTO updateDTO) {
+        recipeRepository.updateClassifications(hexId, updateDTO);
+    }
+
     public void deleteRecipe(String hexId) {
         recipeRepository.deleteRecipe(hexId);
     }
 
-    public RecipeComplete findByRecipeName(String recipeName) throws RecipeNotFoundException {
-        return objectMapper.convertValue(recipeRepository.findByRecipeName(recipeName), RecipeComplete.class);
+    public RecipeShowDTO findByRecipeName(String recipeName) throws RecipeNotFoundException {
+        return objectMapper.convertValue(recipeRepository.findByRecipeName(recipeName), RecipeShowDTO.class);
     }
 
     public RecipeEntity findById(String hexId) throws RecipeNotFoundException {

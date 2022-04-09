@@ -87,7 +87,7 @@ public class UserRepository {
                 .password(docUser.getString("password"))
                 .email(docUser.getString("email"))
                 .age(docUser.getInteger("age"))
-                .isactive(docUser.getBoolean("isactive"))
+                .isActive(docUser.getBoolean("isactive"))
                 .build();
     }
 
@@ -96,7 +96,7 @@ public class UserRepository {
                 .append("email", user.getEmail())
                 .append(("age"), user.getAge())
                 .append("password", user.getPassword())
-                .append("isactive", user.isIsactive());
+                .append("isactive", user.isActive());
     }
 
     public List<UserEntity> aggregatingUser(Bson pipeline, Bson... options) {

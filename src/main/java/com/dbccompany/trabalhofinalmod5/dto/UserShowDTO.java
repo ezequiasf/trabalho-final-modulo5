@@ -9,6 +9,6 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class UserShowDTO extends UserDTO{
+public class UserShowDTO extends UserDTO {
     private String objectId;
 }

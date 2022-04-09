@@ -1,6 +1,7 @@
 package com.dbccompany.trabalhofinalmod5.repository;
 
 import com.dbccompany.trabalhofinalmod5.config.ConnectionMongo;
+import com.dbccompany.trabalhofinalmod5.dto.RecipeShowDTO;
 import com.dbccompany.trabalhofinalmod5.entity.Classification;
 import com.dbccompany.trabalhofinalmod5.entity.RecipeEntity;
 import com.dbccompany.trabalhofinalmod5.exception.RecipeNotFoundException;
@@ -11,6 +12,7 @@ import org.bson.Document;
 import org.bson.types.ObjectId;
 import org.springframework.stereotype.Repository;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -39,7 +41,7 @@ public class RecipeRepository {
                         .append("price", recipe.getPrice())
                         .append("calories", recipe.getCalories())
                         .append("ingredients", recipe.getIngredients())
-                        .append("classifications", new Document())
+                        .append("classifications", Arrays.asList(null))
         ).getInsertedId();
 
         ConnectionMongo.closeConnection(client);
@@ -51,6 +53,20 @@ public class RecipeRepository {
 
         getCollectionRecipe(client).updateOne(new Document("_id", new ObjectId(hexId)),
                 new Document("$set", convertRecipeEntity(recipe)));
+
+        ConnectionMongo.closeConnection(client);
+    }
+
+    public void updateClassifications(String hexId, RecipeShowDTO recipeShowDTO) {
+        MongoClient client = ConnectionMongo.createConnection();
+
+        getCollectionRecipe(client).updateOne(new Document("_id", new ObjectId(hexId)),
+                new Document("$set", new Document("classifications", recipeShowDTO.getClassifications()
+                        .stream().map(classification -> {
+                            return new Document("authorClass", classification.getAuthorClass())
+                                    .append("rating", classification.getRating())
+                                    .append("coment", classification.getComent());
+                        }).collect(Collectors.toList()))));
 
         ConnectionMongo.closeConnection(client);
     }

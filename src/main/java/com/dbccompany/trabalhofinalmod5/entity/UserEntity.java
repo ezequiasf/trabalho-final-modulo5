@@ -13,5 +13,5 @@ public class UserEntity {
     private String password;
     private String email;
     private Integer age;
-    private boolean isactive;
+    private boolean isActive;
 }

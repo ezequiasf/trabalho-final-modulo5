@@ -1,8 +1,8 @@
 package com.dbccompany.trabalhofinalmod5.controller;
 
 
-import com.dbccompany.trabalhofinalmod5.dto.RecipeComplete;
 import com.dbccompany.trabalhofinalmod5.dto.RecipeDTO;
+import com.dbccompany.trabalhofinalmod5.dto.RecipeShowDTO;
 import com.dbccompany.trabalhofinalmod5.dto.RecipeUpdateDTO;
 import com.dbccompany.trabalhofinalmod5.exception.*;
 import com.dbccompany.trabalhofinalmod5.service.RecipeService;
@@ -56,7 +56,7 @@ public class RecipeController {
             @ApiResponse(code = 403, message = "Você não tem permissão para acessar este recurso"),
             @ApiResponse(code = 500, message = "Foi gerada uma exceção no sistema."),})
     @GetMapping("/findByRecipeName")
-    public RecipeComplete findByRecipeName(@RequestParam("recipeName") String recipeName) throws RecipeNotFoundException {
+    public RecipeShowDTO findByRecipeName(@RequestParam("recipeName") String recipeName) throws RecipeNotFoundException {
         return recipeService.findByRecipeName(recipeName);
     }
 }

@@ -1,9 +1,10 @@
 package com.dbccompany.trabalhofinalmod5.service;
 
-import com.dbccompany.trabalhofinalmod5.dto.UserDTO;
-import com.dbccompany.trabalhofinalmod5.dto.UserShowDTO;
-import com.dbccompany.trabalhofinalmod5.dto.UserUpdateDTO;
+import com.dbccompany.trabalhofinalmod5.dto.*;
+import com.dbccompany.trabalhofinalmod5.entity.Classification;
+import com.dbccompany.trabalhofinalmod5.entity.RecipeEntity;
 import com.dbccompany.trabalhofinalmod5.entity.UserEntity;
+import com.dbccompany.trabalhofinalmod5.exception.RecipeNotFoundException;
 import com.dbccompany.trabalhofinalmod5.exception.UserAlreadyExistsException;
 import com.dbccompany.trabalhofinalmod5.exception.UserDontExistException;
 import com.dbccompany.trabalhofinalmod5.repository.UserRepository;
@@ -11,11 +12,14 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.Arrays;
+
 @RequiredArgsConstructor
 @Service
 public class UserService {
     private final UserRepository userRepository;
     private final ObjectMapper objectMapper;
+    private final RecipeService recipeService;
 
     public String saveUser(UserDTO user) throws UserAlreadyExistsException, IllegalAccessException {
         UserEntity userEntity = objectMapper.convertValue(user, UserEntity.class);
@@ -56,5 +60,25 @@ public class UserService {
     //Retorna true se for maior do que 18 anos
     public boolean verifyAge(UserEntity user) {
         return user.getAge() >= 18;
+    }
+
+    public void postClassification(String hexId, ClassificationDTO classificationDTO) throws RecipeNotFoundException, UserDontExistException {
+        RecipeEntity recipe = recipeService.findById(classificationDTO.getObjectIdRecipe());
+        UserEntity user = findById(hexId);
+
+        if (recipe.getClassifications() != null) {
+            recipe.getClassifications().add(Classification.builder()
+                    .authorClass(user.getUsername())
+                    .rating(classificationDTO.getRating())
+                    .coment(classificationDTO.getComent()).build());
+        } else {
+            recipe.setClassifications(Arrays.asList(Classification.builder()
+                    .authorClass(user.getUsername())
+                    .rating(classificationDTO.getRating())
+                    .coment(classificationDTO.getComent()).build()));
+        }
+
+        RecipeShowDTO recipeUpdate = objectMapper.convertValue(recipe, RecipeShowDTO.class);
+        recipeService.updateClassifications(classificationDTO.getObjectIdRecipe(), recipeUpdate);
     }
 }

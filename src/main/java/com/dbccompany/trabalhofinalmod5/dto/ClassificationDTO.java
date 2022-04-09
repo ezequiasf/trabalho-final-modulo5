@@ -10,7 +10,7 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 public class ClassificationDTO {
-    private String authorClass;
+    private String objectIdRecipe;
     private Double rating;
     private String coment;
 }
