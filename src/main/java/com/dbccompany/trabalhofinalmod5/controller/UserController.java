@@ -70,8 +70,8 @@ public class UserController {
     }
 
     @DeleteMapping("/deleteClassification/{userObjectId}")
-    public void deleteClassification (@PathVariable("userObjectId")String userHexId,
-                                      String objectIdRecipe){
+    public void deleteClassification(@PathVariable("userObjectId") String userHexId,
+                                     String objectIdRecipe) {
         userService.deleteClassification(userHexId, objectIdRecipe);
     }
 

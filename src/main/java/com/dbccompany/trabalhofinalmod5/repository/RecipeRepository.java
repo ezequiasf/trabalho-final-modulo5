@@ -13,7 +13,6 @@ import org.bson.Document;
 import org.bson.types.ObjectId;
 import org.springframework.stereotype.Repository;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -133,7 +132,7 @@ public class RecipeRepository {
         BasicDBObject objectId = new BasicDBObject("_id", new ObjectId(objectIdRecipe));
         BasicDBObject objClass = new BasicDBObject("classifications"
                 , new BasicDBObject("authorClass", author));
-        BasicDBObject update = new BasicDBObject("$pull",objClass);
+        BasicDBObject update = new BasicDBObject("$pull", objClass);
 
         getCollectionRecipe(client).updateOne(objectId, update);
 
