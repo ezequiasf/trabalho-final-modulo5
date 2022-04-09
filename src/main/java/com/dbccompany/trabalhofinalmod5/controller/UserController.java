@@ -64,9 +64,15 @@ public class UserController {
     @ApiResponses(value = {@ApiResponse(code = 200, message = "A classificação foi postada com sucesso."),
             @ApiResponse(code = 403, message = "Você não tem permissão para acessar este recurso"),
             @ApiResponse(code = 500, message = "Foi gerada uma exceção no sistema."),})
-    @PostMapping("/{userObjectId}")
+    @PostMapping("/postClassification/{userObjectId}")
     public void postClassification(@PathVariable("userObjectId") String hexId, @RequestBody ClassificationDTO classificationDTO) throws RecipeNotFoundException, UserDontExistException {
         userService.postClassification(hexId, classificationDTO);
+    }
+
+    @DeleteMapping("/deleteClassification/{userObjectId}")
+    public void deleteClassification (@PathVariable("userObjectId")String userHexId,
+                                      String objectIdRecipe){
+        userService.deleteClassification(userHexId, objectIdRecipe);
     }
 
 

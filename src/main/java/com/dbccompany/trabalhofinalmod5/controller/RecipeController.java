@@ -4,7 +4,10 @@ package com.dbccompany.trabalhofinalmod5.controller;
 import com.dbccompany.trabalhofinalmod5.dto.RecipeDTO;
 import com.dbccompany.trabalhofinalmod5.dto.RecipeShowDTO;
 import com.dbccompany.trabalhofinalmod5.dto.RecipeUpdateDTO;
-import com.dbccompany.trabalhofinalmod5.exception.*;
+import com.dbccompany.trabalhofinalmod5.exception.CaloriesLimitExceededException;
+import com.dbccompany.trabalhofinalmod5.exception.PriceExpensiveException;
+import com.dbccompany.trabalhofinalmod5.exception.RecipeNotFoundException;
+import com.dbccompany.trabalhofinalmod5.exception.UserDontExistException;
 import com.dbccompany.trabalhofinalmod5.service.RecipeService;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
@@ -27,7 +30,7 @@ public class RecipeController {
             @ApiResponse(code = 500, message = "Foi gerada uma exceção no sistema."),})
     @PostMapping("/saveRecipe")
     @Validated
-    public String saveRecipe(@Valid @RequestBody RecipeDTO recipe) throws PriceExpensiveException, CaloriesLimitExceededException, IllegalAccessException, UserDontExistException, UserAlreadyExistsException {
+    public String saveRecipe(@Valid @RequestBody RecipeDTO recipe) throws PriceExpensiveException, CaloriesLimitExceededException, IllegalAccessException, UserDontExistException {
         return recipeService.saveRecipe(recipe);
     }
 
@@ -51,7 +54,7 @@ public class RecipeController {
         recipeService.deleteRecipe(hexId);
     }
 
-    @ApiOperation(value = "Encnontrar receitas pelo nome.")
+    @ApiOperation(value = "Encontrar receitas pelo nome.")
     @ApiResponses(value = {@ApiResponse(code = 200, message = "As receitas foram listadas com sucesso."),
             @ApiResponse(code = 403, message = "Você não tem permissão para acessar este recurso"),
             @ApiResponse(code = 500, message = "Foi gerada uma exceção no sistema."),})

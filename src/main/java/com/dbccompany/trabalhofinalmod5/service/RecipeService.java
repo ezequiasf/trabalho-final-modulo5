@@ -18,7 +18,7 @@ import org.springframework.stereotype.Service;
 @Service
 @RequiredArgsConstructor
 public class RecipeService {
-    private final UserRepository useruserRepository;
+    private final UserRepository userRepository;
     private final RecipeRepository recipeRepository;
     private final ObjectMapper objectMapper;
 
@@ -29,11 +29,11 @@ public class RecipeService {
         if (recipe.getCalories() > 1500) {
             throw new CaloriesLimitExceededException("Food too much fat!");
         }
-        UserEntity user = useruserRepository.findByUsername(recipe.getAuthor());
+        UserEntity user = userRepository.findByUsername(recipe.getAuthor());
         if (user == null) {
             throw new UserDontExistException("User don't exists!");
         }
-        if (!user.isActive()) {
+        if (!user.isIsactive()) {
             throw new IllegalAccessException("User not active!");
         }
         return recipeRepository.saveRecipe(objectMapper.convertValue(recipe, RecipeEntity.class));
@@ -67,4 +67,8 @@ public class RecipeService {
     }
 
 
+    public void deleteClassification(String hexId, String objectIdRecipe) {
+        UserEntity user = userRepository.findById(hexId);
+        recipeRepository.deleteClassification(user.getUsername(), objectIdRecipe);
+    }
 }

@@ -57,7 +57,8 @@ public class UserRepository {
     public void deleteUser(String hexId) {
         MongoClient client = ConnectionMongo.createConnection();
 
-        getCollectionUser(client).findOneAndDelete(new Document("_id", new ObjectId(hexId)));
+        getCollectionUser(client).updateOne(new Document("_id", new ObjectId(hexId)),
+                new Document("$set", new Document("isactive", false)));
 
         ConnectionMongo.closeConnection(client);
     }
@@ -87,7 +88,7 @@ public class UserRepository {
                 .password(docUser.getString("password"))
                 .email(docUser.getString("email"))
                 .age(docUser.getInteger("age"))
-                .isActive(docUser.getBoolean("isactive"))
+                .isactive(docUser.getBoolean("isactive"))
                 .build();
     }
 
@@ -96,7 +97,7 @@ public class UserRepository {
                 .append("email", user.getEmail())
                 .append(("age"), user.getAge())
                 .append("password", user.getPassword())
-                .append("isactive", user.isActive());
+                .append("isactive", user.isIsactive());
     }
 
     public List<UserEntity> aggregatingUser(Bson pipeline, Bson... options) {

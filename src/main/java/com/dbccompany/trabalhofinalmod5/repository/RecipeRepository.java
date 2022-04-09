@@ -5,6 +5,7 @@ import com.dbccompany.trabalhofinalmod5.dto.RecipeShowDTO;
 import com.dbccompany.trabalhofinalmod5.entity.Classification;
 import com.dbccompany.trabalhofinalmod5.entity.RecipeEntity;
 import com.dbccompany.trabalhofinalmod5.exception.RecipeNotFoundException;
+import com.mongodb.BasicDBObject;
 import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoCollection;
 import org.bson.BsonValue;
@@ -41,7 +42,7 @@ public class RecipeRepository {
                         .append("price", recipe.getPrice())
                         .append("calories", recipe.getCalories())
                         .append("ingredients", recipe.getIngredients())
-                        .append("classifications", Arrays.asList(null))
+//                        .append("classifications", Arrays.asList(new Document()))
         ).getInsertedId();
 
         ConnectionMongo.closeConnection(client);
@@ -62,11 +63,9 @@ public class RecipeRepository {
 
         getCollectionRecipe(client).updateOne(new Document("_id", new ObjectId(hexId)),
                 new Document("$set", new Document("classifications", recipeShowDTO.getClassifications()
-                        .stream().map(classification -> {
-                            return new Document("authorClass", classification.getAuthorClass())
-                                    .append("rating", classification.getRating())
-                                    .append("coment", classification.getComent());
-                        }).collect(Collectors.toList()))));
+                        .stream().map(classification -> new Document("authorClass", classification.getAuthorClass())
+                                .append("rating", classification.getRating())
+                                .append("coment", classification.getComent())).collect(Collectors.toList()))));
 
         ConnectionMongo.closeConnection(client);
     }
@@ -126,5 +125,18 @@ public class RecipeRepository {
 
     public MongoCollection<Document> getCollectionRecipe(MongoClient client) {
         return client.getDatabase(DATABASE).getCollection(COLLECTION);
+    }
+
+    public void deleteClassification(String author, String objectIdRecipe) {
+        MongoClient client = ConnectionMongo.createConnection();
+
+        BasicDBObject objectId = new BasicDBObject("_id", new ObjectId(objectIdRecipe));
+        BasicDBObject objClass = new BasicDBObject("classifications"
+                , new BasicDBObject("authorClass", author));
+        BasicDBObject update = new BasicDBObject("$pull",objClass);
+
+        getCollectionRecipe(client).updateOne(objectId, update);
+
+        ConnectionMongo.closeConnection(client);
     }
 }

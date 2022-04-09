@@ -12,7 +12,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.util.Arrays;
+import java.util.List;
 
 @RequiredArgsConstructor
 @Service
@@ -33,11 +33,11 @@ public class UserService {
         return userRepository.saveUser(userEntity);
     }
 
-    public void updateUser(String id, UserUpdateDTO user) throws UserDontExistException {
-        UserEntity userEntity = findById(id);
+    public void updateUser(String hexId, UserUpdateDTO user) throws UserDontExistException {
+        UserEntity userEntity = findById(hexId);
         UserEntity userPersist = objectMapper.convertValue(user, UserEntity.class);
         userPersist.setUsername(userEntity.getUsername());
-        userRepository.updateUser(id, userPersist);
+        userRepository.updateUser(hexId, userPersist);
     }
 
     public UserShowDTO findByUsername(String username) {
@@ -72,7 +72,7 @@ public class UserService {
                     .rating(classificationDTO.getRating())
                     .coment(classificationDTO.getComent()).build());
         } else {
-            recipe.setClassifications(Arrays.asList(Classification.builder()
+            recipe.setClassifications(List.of(Classification.builder()
                     .authorClass(user.getUsername())
                     .rating(classificationDTO.getRating())
                     .coment(classificationDTO.getComent()).build()));
@@ -80,5 +80,9 @@ public class UserService {
 
         RecipeShowDTO recipeUpdate = objectMapper.convertValue(recipe, RecipeShowDTO.class);
         recipeService.updateClassifications(classificationDTO.getObjectIdRecipe(), recipeUpdate);
+    }
+
+    public void deleteClassification(String userHexId, String objectIdRecipe) {
+        recipeService.deleteClassification(userHexId, objectIdRecipe);
     }
 }
