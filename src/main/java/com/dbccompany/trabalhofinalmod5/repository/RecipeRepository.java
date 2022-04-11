@@ -117,6 +117,7 @@ public class RecipeRepository {
                 .append("recipeName", recipe.getRecipeName())
                 .append(("prepareRecipe"), recipe.getPrepareRecipe())
                 .append("prepareTime", recipe.getPrepareTime())
+                .append("price", recipe.getPrice())
                 .append("calories", recipe.getCalories())
                 .append("ingredients", recipe.getIngredients());
     }
